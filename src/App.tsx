@@ -7,12 +7,49 @@ import {
   View,
 } from 'react-native';
 import RNFS from "react-native-fs";
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+const Stack = createNativeStackNavigator();
 
-function App(): JSX.Element {
-  const [loony, setLoony] = useState<any>([]);
+function AddDataComponent(): JSX.Element {
   const [thiskey, setthiskey] = useState("");
   const [thisvalue, setthisvalue] = useState("");
-  const [pathData, setPathData] = useState("");
+  const appendData = () => {
+    // let x = loony;
+    // x.push({ key: thiskey, value: thisvalue })
+    // setLoony(x);
+  }
+  return (
+    <View>
+      <TextInput onChangeText={setthiskey} value={thiskey} placeholderTextColor="#cccccc" style={styles.input} placeholder='input key' />
+      <TextInput onChangeText={setthisvalue} value={thisvalue} placeholderTextColor="#cccccc" style={styles.input} placeholder='input value'/>
+      <Button
+        onPress={appendData}
+        title="Append Data"
+        color="#841584"
+        accessibilityLabel="Append Data"
+      />
+    </View>
+  );
+}
+
+function Navigation(): JSX.Element {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{title: 'Loony'}}
+        />
+        <Stack.Screen name="AddDataComponent" component={AddDataComponent} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+function HomeScreen({navigation, route}: any): JSX.Element {
+  const [loony, setLoony] = useState<any>([]);
   const [writeData, setWriteData] = useState("");
 
   useEffect(() => {
@@ -47,20 +84,8 @@ function App(): JSX.Element {
     })
   }
 
-  const appendData = () => {
-    let x = loony;
-    x.push({ key: thiskey, value: thisvalue })
-    setLoony(x);
-  }
-
   return (
     <View>
-      <Text>Loony</Text>
-      <View>
-        <TextInput onChangeText={setthiskey} value={thiskey} placeholderTextColor="#cccccc" style={styles.input} placeholder='input key' />
-        <TextInput onChangeText={setthisvalue} value={thisvalue} placeholderTextColor="#cccccc" style={styles.input} placeholder='input value'/>
-      </View>
-
       <View>
         {loony.map((ldata: any) => {
           return <View key={ldata.key}>
@@ -71,10 +96,12 @@ function App(): JSX.Element {
         })}
       </View>
       <Button
-        onPress={appendData}
-        title="Append Data"
+        onPress={() => { 
+          navigation.navigate('AddDataComponent', {name: 'Jane'})
+        }}
+        title="Add Component"
         color="#841584"
-        accessibilityLabel="Append Data"
+        accessibilityLabel="Add Component"
       />
       <Button
         onPress={saveAllData}
@@ -102,4 +129,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default App;
+export default Navigation;
