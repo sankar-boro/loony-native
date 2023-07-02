@@ -11,7 +11,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 const Stack = createNativeStackNavigator();
 
-function AddDataComponent(): JSX.Element {
+function PasswordComponent(): JSX.Element {
   const [thiskey, setthiskey] = useState("");
   const [thisvalue, setthisvalue] = useState("");
   const appendData = () => {
@@ -33,6 +33,14 @@ function AddDataComponent(): JSX.Element {
   );
 }
 
+function ImageComponent(): JSX.Element {
+  return (
+    <View>
+      <Text>Image Component</Text>
+    </View>
+  );
+}
+
 function Navigation(): JSX.Element {
   return (
     <NavigationContainer>
@@ -42,7 +50,8 @@ function Navigation(): JSX.Element {
           component={HomeScreen}
           options={{title: 'Loony'}}
         />
-        <Stack.Screen name="AddDataComponent" component={AddDataComponent} />
+        <Stack.Screen name="PasswordComponent" component={PasswordComponent} />
+        <Stack.Screen name="ImageComponent" component={ImageComponent} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -84,6 +93,20 @@ function HomeScreen({navigation, route}: any): JSX.Element {
     })
   }
 
+  const renderCtxData = [
+    {
+      id: 1,
+      title: "ADD PASSWORD",
+      style: { color: "red", fontWeight: "bold" },
+      navigate: () => navigation.navigate('PasswordComponent', {name: 'Jane'})
+    },
+    {
+      id: 2,
+      style: { color: "green", fontWeight: "bold" },
+      title: "ENCRYPT IMAGE",
+      navigate: () => navigation.navigate('ImageComponent', {name: 'Jane'})
+    }
+  ];
   return (
     <View>
       <View>
@@ -93,6 +116,14 @@ function HomeScreen({navigation, route}: any): JSX.Element {
               NAME: {ldata.key} VALUE: {ldata.value}
             </Text>
           </View>
+        })}
+      </View>
+
+      <View style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", padding: 10 }}>
+        {renderCtxData.map((data: any) => {
+          return <View key={data.id} style={styles.card}>
+          <Text style={{ ...data.style }} onPress={data.navigate}>{data.title}</Text>
+        </View>
         })}
       </View>
       <Button
@@ -126,6 +157,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#cccccc",
     padding: 10
+  },
+  card: {
+    width: "48%", 
+    height: 50, 
+    borderWidth: 1, 
+    borderColor: "#ebe8e8", 
+    marginTop: 10, 
+    borderRadius: 5, 
+    padding: 5, 
+    backgroundColor: "white", 
+    justifyContent: "center",
+    alignItems: "center"
   }
 });
 
