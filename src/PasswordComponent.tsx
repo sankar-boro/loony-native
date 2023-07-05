@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Button,
   StyleSheet,
@@ -8,71 +8,45 @@ import {
 } from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Fuse from 'fuse.js'
+import { useServiceContext } from "./ServiceProvider";
 
 const Stack = createNativeStackNavigator();
 
 export default function PasswordComponent(): JSX.Element {
-
-    const [uniqueName, setUniqueName] = useState("");
+    const { dispatch, fuse } = useServiceContext();
     const [searchText, setSearch] = useState("");
+    const [uniqueName, setUniqueName] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [searchRes, setSearchRes] = useState("");
+    const [searchRes, setSearchRes] = useState([]);
 
-    useEffect(() => {
-      const list = [
-        {
-          "uniqueName": "gmail",
-          "url": "https://gmail.com",
-          "username": "s4nk4r.b0r0@gmail.com",
-          "password": ["sankar"]
-        },
-        {
-          "uniqueName": "gmail",
-          "url": "https://gmail.com",
-          "username": "s4nk4r.dd@gmail.com",
-          "password": ["sankar"]
-        }
-      ]
-      const options = {
-        includeScore: true,
-        // Search in `author` and in `tags` array
-        keys: ['uniqueName', 'url']
-      }
-      
-      const fuse = new Fuse(list, options)
-      
-      const result = fuse.search('gmail')
-      setSearchRes(JSON.stringify(result));
-    }, []);
-
-    const save = async () => {
+    const save = () => {
       if (!uniqueName || !username || !password) {
         setError("Cannot have empty field values for username, password or url.");
       } else {
-        await AsyncStorage.setItem(
-          `${uniqueName}`,
-          JSON.stringify({ username, password, uniqueName }),
-        );
+        // await AsyncStorage.setItem(
+        //   `${uniqueName}`,
+        //   JSON.stringify({ username, password, uniqueName }),
+        // );
+        fuse.add({ username, password, uniqueName })
       }
     }
 
-    const search = async () => {
+    const search = () => {
       if (!searchText) {
         setError("Search field cannot be empty!");
       } else {
-        AsyncStorage.getItem(searchText)
-        .then((res: any) => {
-
-        });
+        const res = fuse.search(searchText)
+        setSearchRes(res);
       }
     }
 
     return (
       <View>
-        <Text>{searchRes}</Text>
+        <View>{searchRes.map((res: any) => {
+          return <Text key={res.uniqueName}>{res.item.uniqueName}{res.item.username}{res.item.password}</Text>
+        })}</View>
         <View>
           <TextInput onChangeText={setSearch} value={searchText} placeholderTextColor="#cccccc" style={styles.input} placeholder='Search and edit' />
           <Button

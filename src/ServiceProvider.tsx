@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useReducer } from "react";
 import RNFS from "react-native-fs";
+import Fuse from 'fuse.js'
 
 export const setters = (state: any, action: any) => {
     const { keys, values } = action;
@@ -20,8 +21,15 @@ export const setters = (state: any, action: any) => {
     return state;
 }
 
+const options = {
+    includeScore: true,
+    keys: ['uniqueName', 'url']
+}
+
 const initData: any = {
     data: null,
+    searchData: null,
+    fuse: new Fuse([], options),
     dispatch: (e: any) => {
         console.log(e)
     }
@@ -29,6 +37,8 @@ const initData: any = {
 
 export const AppContext = React.createContext<any>({
     data: null,
+    searchData: null,
+    fuse: new Fuse([], options),
     dispatch: (e: any) => {
         console.log(e)
     }
@@ -37,12 +47,12 @@ export const AppContext = React.createContext<any>({
 const useApp = (dispatch: any) => {
     useEffect(() => {
         RNFS.readFile(`${RNFS.ExternalDirectoryPath}/password.json`)
-      .then((readFileRes: any) => {
+        .then((readFileRes: any) => {  
             dispatch({
                 keys: ['data'],
                 values: [readFileRes]
             })
-      })
+        })
       .catch((err: any) => {
   
       })
@@ -54,12 +64,12 @@ export const useServiceContext = () => useContext(AppContext);
 export const ServiceProvider = (props: any) => {
     const [state, dispatch] = useReducer(setters, initData);
     useApp(dispatch);
-
     return (
         <AppContext.Provider
             value={{
                 ...state,
-                dispatch
+                dispatch,
+                
             }}
         >
             {props.children}
