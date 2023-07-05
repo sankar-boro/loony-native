@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   StyleSheet,
@@ -6,36 +6,44 @@ import {
   View,
   Text
 } from 'react-native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useServiceContext } from "./ServiceProvider";
-
-const Stack = createNativeStackNavigator();
+import RNFS from "react-native-fs";
 
 export default function PasswordComponent(): JSX.Element {
-    const { dispatch, fuse } = useServiceContext();
+    const { data, fuse, dispatch } = useServiceContext();
     const [searchText, setSearch] = useState("");
     const [uniqueName, setUniqueName] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    const [error, setError] = useState<any>({inputValues: null, writeFile: null, searchText: null});
     const [searchRes, setSearchRes] = useState([]);
 
     const save = () => {
       if (!uniqueName || !username || !password) {
-        setError("Cannot have empty field values for username, password or url.");
+        setError({inputValues: "Cannot have empty field values for username, password or url.", writeFile: null, searchText: null });
       } else {
-        // await AsyncStorage.setItem(
-        //   `${uniqueName}`,
-        //   JSON.stringify({ username, password, uniqueName }),
-        // );
-        fuse.add({ username, password, uniqueName })
+        let newData = { username, password, uniqueName };
+        let newGroup: any = [...data, newData];
+        fuse.add(newData)
+        dispatch({
+          keys: ['data'],
+          values: newGroup
+        })
+        RNFS.writeFile(`${RNFS.ExternalDirectoryPath}/password.json`, JSON.stringify(newGroup))
+        .then((readFileRes: any) => {  
+            setUniqueName("");
+            setUsername("");
+            setPassword("");
+        })
+        .catch((err: any) => {
+          setError({inputValues: null, writeFile: err, searchText: null });
+        })
       }
     }
 
     const search = () => {
       if (!searchText) {
-        setError("Search field cannot be empty!");
+        setError({inputValues: null, writeFile: null, searchText: 'Search input cannot be empty!' });
       } else {
         const res = fuse.search(searchText)
         setSearchRes(res);
@@ -44,9 +52,20 @@ export default function PasswordComponent(): JSX.Element {
 
     return (
       <View>
-        <View>{searchRes.map((res: any) => {
-          return <Text key={res.uniqueName}>{res.item.uniqueName}{res.item.username}{res.item.password}</Text>
+        <View>
+          <Text>{error.inputValues}</Text>
+          <Text>{error.writeFile}</Text>
+          <Text>{error.searchText}</Text>
+        </View>
+
+        <View>{searchRes.map((res: any, index: number) => {
+          return <View key={index}>
+            <Text>{res.item.uniqueName}</Text>
+            <Text>{res.item.username}</Text>
+            <Text>{res.item.password}</Text>
+          </View>
         })}</View>
+      
         <View>
           <TextInput onChangeText={setSearch} value={searchText} placeholderTextColor="#cccccc" style={styles.input} placeholder='Search and edit' />
           <Button
@@ -57,7 +76,6 @@ export default function PasswordComponent(): JSX.Element {
           />
         </View>
 
-        <Text>{error}</Text>
         <TextInput onChangeText={setUniqueName} value={uniqueName} placeholderTextColor="#cccccc" style={styles.input} placeholder='Unique name' />
         <TextInput onChangeText={setUsername} value={username} placeholderTextColor="#cccccc" style={styles.input} placeholder='Username' />
         <TextInput onChangeText={setPassword} value={password} placeholderTextColor="#cccccc" style={styles.input} placeholder='Password'/>

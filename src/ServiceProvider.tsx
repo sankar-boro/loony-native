@@ -27,8 +27,7 @@ const options = {
 }
 
 const initData: any = {
-    data: null,
-    searchData: null,
+    data: [],
     fuse: new Fuse([], options),
     dispatch: (e: any) => {
         console.log(e)
@@ -36,8 +35,7 @@ const initData: any = {
 }
 
 export const AppContext = React.createContext<any>({
-    data: null,
-    searchData: null,
+    data: [],
     fuse: new Fuse([], options),
     dispatch: (e: any) => {
         console.log(e)
@@ -47,10 +45,11 @@ export const AppContext = React.createContext<any>({
 const useApp = (dispatch: any) => {
     useEffect(() => {
         RNFS.readFile(`${RNFS.ExternalDirectoryPath}/password.json`)
-        .then((readFileRes: any) => {  
+        .then((readFileRes: any) => {
+            let dj = JSON.parse(readFileRes);  
             dispatch({
-                keys: ['data'],
-                values: [readFileRes]
+                keys: ['data', 'fuse'],
+                values: [dj, new Fuse(dj, options)]
             })
         })
       .catch((err: any) => {
@@ -69,7 +68,6 @@ export const ServiceProvider = (props: any) => {
             value={{
                 ...state,
                 dispatch,
-                
             }}
         >
             {props.children}
