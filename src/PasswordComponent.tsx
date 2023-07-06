@@ -15,7 +15,7 @@ export default function PasswordComponent(): JSX.Element {
     const [uniqueName, setUniqueName] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState<any>({inputValues: null, writeFile: null, searchText: null});
+    const [error, setError] = useState<any>(null);
     const [searchRes, setSearchRes] = useState([]);
 
     const save = () => {
@@ -51,30 +51,33 @@ export default function PasswordComponent(): JSX.Element {
     }
 
     return (
-      <View>
-        <View>
+      <View style={styles.container}>
+        {error ? <View>
           <Text>{error.inputValues}</Text>
           <Text>{error.writeFile}</Text>
           <Text>{error.searchText}</Text>
+        </View> : null }
+
+
+        <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+          <TextInput onChangeText={setSearch} value={searchText} placeholderTextColor="#cccccc" style={{ ...styles.input, ...styles.searchInput }} placeholder='Search and edit' />
+          <View style={styles.button} onTouchEnd={search}><Text style={styles.buttonTxt}>Search</Text></View>
         </View>
 
-        <View>{searchRes.map((res: any, index: number) => {
-          return <View key={index}>
-            <Text>{res.item.uniqueName}</Text>
-            <Text>{res.item.username}</Text>
-            <Text>{res.item.password}</Text>
-          </View>
-        })}</View>
-      
         <View>
-          <TextInput onChangeText={setSearch} value={searchText} placeholderTextColor="#cccccc" style={styles.input} placeholder='Search and edit' />
-          <Button
-            onPress={search}
-            title="Search"
-            color="#841584"
-            accessibilityLabel="Search"
-          />
+          {searchRes.map((res: any, index: number) => {
+            return <View style={styles.searchCard} key={index}>
+              <Text style={styles.searchCardText}>{res.item.uniqueName}</Text>
+              <Text style={styles.searchCardText}>{res.item.username}</Text>
+              <Text style={styles.searchCardText}>{res.item.password}</Text>
+            </View>
+          })}
+          {searchRes.length > 0 ? <View onTouchEnd={() => {setSearchRes([])}}>
+            <Text>Close</Text>
+          </View> : null}
         </View>
+
+        <View style={styles.border}/>
 
         <TextInput onChangeText={setUniqueName} value={uniqueName} placeholderTextColor="#cccccc" style={styles.input} placeholder='Unique name' />
         <TextInput onChangeText={setUsername} value={username} placeholderTextColor="#cccccc" style={styles.input} placeholder='Username' />
@@ -91,12 +94,22 @@ export default function PasswordComponent(): JSX.Element {
 
 
 const styles = StyleSheet.create({
+    container: {
+      padding: 10,
+    },
+    searchInput: {
+      width: "75%",
+      borderRadius: 50,
+      paddingLeft: 15,
+    },
     input: {
+      marginTop: 5,
+      marginBottom: 5,
       height: 40,
-      margin: 12,
+      padding: 10,
       borderWidth: 1,
+      borderRadius: 5,
       borderColor: "#cccccc",
-      padding: 10
     },
     card: {
       width: "48%", 
@@ -109,5 +122,30 @@ const styles = StyleSheet.create({
       backgroundColor: "white", 
       justifyContent: "center",
       alignItems: "center"
+    },
+    button: {
+      width: "20%",
+      backgroundColor: "purple",
+      justifyContent: "center",
+      alignItems: "center",
+      height: 40,
+      borderRadius: 5
+    },
+    buttonTxt: {
+      fontWeight: "bold",
+      color: "white"
+    },
+    border: {
+      marginTop: 5, 
+      marginBottom: 5,
+      borderBottomWidth: 1,
+      borderBottomColor: "grey"
+    },
+    searchCard: {
+      backgroundColor: "white",
+      padding: 10,
+    },
+    searchCardText: {
+      color: "black"
     }
 });
