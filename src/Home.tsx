@@ -1,47 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
-  Button,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import RNFS from "react-native-fs";
 
 export default function HomeScreen({navigation, route}: any): JSX.Element {
-    const [loony, setLoony] = useState<any>([]);
-    const [writeData, setWriteData] = useState("");
-  
-    useEffect(() => {
-      RNFS.readDir(RNFS.ExternalDirectoryPath)
-      .then((readDirRes: any) => {
-        if (readDirRes.length === 0) {
-          RNFS.writeFile(`${RNFS.ExternalDirectoryPath}/password.json`, "[]")
-          .then((writeRes: any) => {
-  
-          })
-          .catch((err: any) => {
-  
-          })
-        }
-      })
-    },[])
-  
-    const loadData = () => {
-      RNFS.readFile(`${RNFS.ExternalDirectoryPath}/password.json`)
-      .then((readFileRes: any) => {
-        setLoony(JSON.parse(readFileRes));
-      })
-      .catch((err: any) => {
-  
-      })
-    }
-  
-    const saveAllData = () => {
-      RNFS.writeFile(`${RNFS.ExternalDirectoryPath}/password.json`, JSON.stringify(loony))
-      .then((wres) => {
-        setWriteData(JSON.stringify(wres));
-      })
-    }
   
     const renderCtxData = [
       {
@@ -55,20 +19,16 @@ export default function HomeScreen({navigation, route}: any): JSX.Element {
         style: { color: "green", fontWeight: "bold" },
         title: "ENCRYPT IMAGE",
         navigate: () => navigation.navigate('ImageComponent', {name: 'Jane'})
+      },
+      {
+        id: 3,
+        style: { color: "blue", fontWeight: "bold" },
+        title: "View All",
+        navigate: () => navigation.navigate('ShowAllComponent', {name: 'Jane'})
       }
     ];
     return (
       <View>
-        <View>
-          {loony.map((ldata: any) => {
-            return <View key={ldata.key}>
-              <Text>
-                NAME: {ldata.key} VALUE: {ldata.value}
-              </Text>
-            </View>
-          })}
-        </View>
-  
         <View style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", padding: 10 }}>
           {renderCtxData.map((data: any) => {
             return <View key={data.id} style={styles.card}>
@@ -76,26 +36,6 @@ export default function HomeScreen({navigation, route}: any): JSX.Element {
           </View>
           })}
         </View>
-        <Button
-          onPress={() => { 
-            navigation.navigate('AddDataComponent', {name: 'Jane'})
-          }}
-          title="Add Component"
-          color="#841584"
-          accessibilityLabel="Add Component"
-        />
-        <Button
-          onPress={saveAllData}
-          title="Save All"
-          color="#841584"
-          accessibilityLabel="Save All"
-        />
-        <Button
-          onPress={loadData}
-          title="Load"
-          color="#841584"
-          accessibilityLabel="Load"
-        />
       </View>
     );
   }
