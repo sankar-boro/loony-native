@@ -34,6 +34,7 @@ const initData: any = {
         load: false,
         hasPassword: false,
         auth: false,
+        value: ''
     },
     dispatch: (e: any) => {
         console.log(e)
@@ -47,6 +48,7 @@ export const AppContext = React.createContext<any>({
         load: false,
         hasPassword: false,
         auth: false,
+        value: ''
     },
     dispatch: (e: any) => {
         console.log(e)
@@ -72,14 +74,27 @@ const useApp = (dispatch: any) => {
 const usePassword = (dispatch: any) => {
     useEffect(() => {
         AsyncStorage.getItem("one_pass").then((res: any) => {
-            dispatch({
-                keys: ['password'],
-                values: [{
-                    load: true,
-                    hasPassword: true,
-                    auth: false
-                }]
-            })
+            if (res) {
+                dispatch({
+                    keys: ['password'],
+                    values: [{
+                        load: true,
+                        hasPassword: true,
+                        auth: false,
+                        value: res,
+                    }]
+                })
+            } else {
+                dispatch({
+                    keys: ['password'],
+                    values: [{
+                        load: true,
+                        hasPassword: false,
+                        auth: false,
+                        value: "",
+                    }]
+                })
+            }
         })
         .catch((err: any) => {
             dispatch({
@@ -87,7 +102,8 @@ const usePassword = (dispatch: any) => {
                 values: [{
                     load: true,
                     hasPassword: false,
-                    auth: false
+                    auth: false,
+                    value: ''
                 }]
             })
         })
