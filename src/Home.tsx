@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
-  View,
-  Alert
+  View
 } from 'react-native';
 import { useServiceContext } from './ServiceProvider';
 
@@ -42,16 +41,16 @@ export default function HomeScreen({navigation, route}: any): JSX.Element {
         id: 4,
         style: { color: "purple", fontWeight: "bold" },
         title: "UPDATE PASSWORD",
-        navigate: () => navigation.navigate('GeneratePassword', {name: 'Jane'})
+        navigate: () => navigation.navigate('GenerateOneTimePassword', {name: 'Jane'})
       }
     ];
 
     return (
       <View style={styles.container}>
-        <View>
+        {/* <View>
           <Text>Log</Text>
           <Text>{log}</Text>
-        </View>
+        </View> */}
         <View style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between" }}>
           {renderCtxData.map((data: any) => {
             return <View key={data.id} style={styles.card}>

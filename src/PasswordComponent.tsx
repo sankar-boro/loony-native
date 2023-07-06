@@ -58,26 +58,24 @@ export default function PasswordComponent(): JSX.Element {
           <Text>{error.searchText}</Text>
         </View> : null }
 
+        <View style={{ marginBottom: 20 }}>
+          <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <TextInput onChangeText={setSearch} value={searchText} placeholderTextColor="#cccccc" style={{ ...styles.input, ...styles.searchInput }} placeholder='Search and edit' />
+            <View style={styles.button} onTouchEnd={search}><Text style={styles.buttonTxt}>Search</Text></View>
+          </View>
 
-        <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-          <TextInput onChangeText={setSearch} value={searchText} placeholderTextColor="#cccccc" style={{ ...styles.input, ...styles.searchInput }} placeholder='Search and edit' />
-          <View style={styles.button} onTouchEnd={search}><Text style={styles.buttonTxt}>Search</Text></View>
+          <View>
+            {searchRes.map((res: any, index: number) => {
+              return <View style={styles.searchCard} key={index}>
+                <Text style={styles.searchCardText}>{res.item.uniqueName}</Text>
+                <Text style={styles.searchCardText}>{res.item.username}</Text>
+              </View>
+            })}
+            {searchRes.length > 0 ? <View onTouchEnd={() => {setSearchRes([])}}>
+              <Text>Close</Text>
+            </View> : null}
+          </View>
         </View>
-
-        <View>
-          {searchRes.map((res: any, index: number) => {
-            return <View style={styles.searchCard} key={index}>
-              <Text style={styles.searchCardText}>{res.item.uniqueName}</Text>
-              <Text style={styles.searchCardText}>{res.item.username}</Text>
-              <Text style={styles.searchCardText}>{res.item.password}</Text>
-            </View>
-          })}
-          {searchRes.length > 0 ? <View onTouchEnd={() => {setSearchRes([])}}>
-            <Text>Close</Text>
-          </View> : null}
-        </View>
-
-        <View style={styles.border}/>
 
         <TextInput onChangeText={setUniqueName} value={uniqueName} placeholderTextColor="#cccccc" style={styles.input} placeholder='Unique name' />
         <TextInput onChangeText={setUsername} value={username} placeholderTextColor="#cccccc" style={styles.input} placeholder='Username' />
@@ -134,12 +132,6 @@ const styles = StyleSheet.create({
     buttonTxt: {
       fontWeight: "bold",
       color: "white"
-    },
-    border: {
-      marginTop: 5, 
-      marginBottom: 5,
-      borderBottomWidth: 1,
-      borderBottomColor: "grey"
     },
     searchCard: {
       backgroundColor: "white",

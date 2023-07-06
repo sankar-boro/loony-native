@@ -1,18 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
-  Text
+  Text,
+  TextInput,
+  Button
 } from 'react-native';
 import { useServiceContext } from "./ServiceProvider";
 
 export default function ShowAllComponent(): JSX.Element {
-    const { data, fuse, dispatch } = useServiceContext();
+    
+    const { data, password } = useServiceContext();
+    const [pass, setPass] = useState("");
+    const [match, setMatch] = useState("FALSE");
+    
+    const matchPass = () => {
+      if (pass === password.value) {
+        setMatch("TRUE")
+      }
+    }
 
     return (
-      <View>
-        {data && data.map((r: any) => {
-            return <View key={r.uniqueName}>
+      <View style={styles.container}>
+        <View style={{ marginBottom: 20 }}>
+        <TextInput 
+        onChangeText={setPass} 
+        value={pass} 
+        placeholderTextColor="#cccccc" 
+        style={styles.input} 
+        placeholder='Enter App Password' 
+        />
+        <Button
+          onPress={matchPass}
+          title="Match"
+          color="#841584"
+          accessibilityLabel="Match"
+        />
+        </View>
+
+        {match === "TRUE" && data && data.map((r: any) => {
+            return <View key={r.uniqueName} style={styles.cardContainer}>
                 <Text>{r.uniqueName}</Text>
                 <Text>{r.username}</Text>
                 <Text>{r.password}</Text>
@@ -24,12 +51,20 @@ export default function ShowAllComponent(): JSX.Element {
 
 
 const styles = StyleSheet.create({
+    container: {
+      padding: 10
+    },
+    cardContainer: {
+      backgroundColor: "white",
+      padding: 10,
+      marginBottom: 10
+    },
     input: {
       height: 40,
-      margin: 12,
       borderWidth: 1,
       borderColor: "#cccccc",
-      padding: 10
+      padding: 10,
+      marginBottom: 10
     },
     card: {
       width: "48%", 

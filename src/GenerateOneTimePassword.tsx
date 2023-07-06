@@ -9,8 +9,9 @@ import {
 import { useServiceContext } from "./ServiceProvider";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function GeneratePassword({navigation, route}: any): JSX.Element {
-    const { data, fuse, dispatch, password } = useServiceContext();
+export default function GenerateOneTimePassword({navigation, route}: any): JSX.Element {
+    
+    const { dispatch, password } = useServiceContext();
     const [pass, setPassword] = useState("");
     const [error, setError] = useState();
     const [log, setLog] = useState("");
@@ -57,10 +58,10 @@ export default function GeneratePassword({navigation, route}: any): JSX.Element 
 
     return (
       <View style={styles.container}>
-        <View>
+        {/* <View>
             <Text>Log</Text>
             <Text>{log}</Text>
-        </View>
+        </View> */}
         {error ? <Text>{error}</Text> : null }
         <TextInput 
         onChangeText={setPassword} 
@@ -96,6 +97,8 @@ const styles = StyleSheet.create({
       marginBottom: 10,
       borderWidth: 1,
       borderColor: "#cccccc",
+      borderRadius: 5,
+      backgroundColor: "white",
       padding: 10
     },
     card: {
