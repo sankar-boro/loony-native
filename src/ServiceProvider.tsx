@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useReducer } from "react";
 import RNFS from "react-native-fs";
 import Fuse from 'fuse.js'
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const setters = (state: any, action: any) => {
     const { keys, values } = action;
@@ -29,6 +30,11 @@ const options = {
 const initData: any = {
     data: [],
     fuse: new Fuse([], options),
+    password: {
+        load: false,
+        hasPassword: false,
+        auth: false,
+    },
     dispatch: (e: any) => {
         console.log(e)
     }
@@ -37,6 +43,11 @@ const initData: any = {
 export const AppContext = React.createContext<any>({
     data: [],
     fuse: new Fuse([], options),
+    password: {
+        load: false,
+        hasPassword: false,
+        auth: false,
+    },
     dispatch: (e: any) => {
         console.log(e)
     }
@@ -58,11 +69,37 @@ const useApp = (dispatch: any) => {
     }, []);
 }
 
+const usePassword = (dispatch: any) => {
+    useEffect(() => {
+        AsyncStorage.getItem("one_pass").then((res: any) => {
+            dispatch({
+                keys: ['password'],
+                values: [{
+                    load: true,
+                    hasPassword: true,
+                    auth: false
+                }]
+            })
+        })
+        .catch((err: any) => {
+            dispatch({
+                keys: ['password'],
+                values: [{
+                    load: true,
+                    hasPassword: false,
+                    auth: false
+                }]
+            })
+        })
+    }, []);
+}
+
 export const useServiceContext = () => useContext(AppContext);
 
 export const ServiceProvider = (props: any) => {
     const [state, dispatch] = useReducer(setters, initData);
     useApp(dispatch);
+    usePassword(dispatch);
     return (
         <AppContext.Provider
             value={{

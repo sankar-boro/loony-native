@@ -8,6 +8,7 @@ import ImageComponent from './ImageComponent';
 import PasswordComponent from './PasswordComponent';
 import { ServiceProvider } from './ServiceProvider';
 import ShowAllComponent from './ShowAllComponent';
+import GeneratePassword from './GeneratePassword';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +26,8 @@ function Navigation(): JSX.Element {
           <Stack.Screen name="PasswordComponent" component={PasswordComponent} />
           <Stack.Screen name="ImageComponent" component={ImageComponent} />
           <Stack.Screen name="ShowAllComponent" component={ShowAllComponent} />
+          <Stack.Screen name="GeneratePassword" component={GeneratePassword} />
+
         </Stack.Navigator>
       </ServiceProvider>
     </NavigationContainer>

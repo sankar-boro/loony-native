@@ -1,12 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import { useServiceContext } from './ServiceProvider';
 
 export default function HomeScreen({navigation, route}: any): JSX.Element {
-  
+    
+    const { password } = useServiceContext();
+    
+    useEffect(() => {
+      if (password.load && !password.hasPassword) {
+        navigation.navigate('GeneratePassword', {name: 'Jane'})
+      }
+    }, [password.load])
+
     const renderCtxData = [
       {
         id: 1,
@@ -27,9 +36,10 @@ export default function HomeScreen({navigation, route}: any): JSX.Element {
         navigate: () => navigation.navigate('ShowAllComponent', {name: 'Jane'})
       }
     ];
+
     return (
       <View>
-        <View style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", padding: 10 }}>
+        <View style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", padding: 10 }}>
           {renderCtxData.map((data: any) => {
             return <View key={data.id} style={styles.card}>
             <Text style={{ ...data.style }} onPress={data.navigate}>{data.title}</Text>
@@ -49,7 +59,7 @@ export default function HomeScreen({navigation, route}: any): JSX.Element {
       padding: 10
     },
     card: {
-      width: "48%", 
+      width: "100%", 
       height: 50, 
       borderWidth: 1, 
       borderColor: "#ebe8e8", 
