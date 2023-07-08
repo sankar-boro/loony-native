@@ -1,67 +1,86 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import CryptoJS from "crypto-js";
-import bcrypt from "bcrypt";
+import Aes from 'react-native-aes-crypto'
 import { APP_PASSWORD } from "./types";
 
-const saltRounds = 10;
-
 export enum RESULT {
-    SUCCESS = 1,
-    MATCH = 2,
-    NOT_MATCH = 3,
-    ERROR = 4,
+    SUCCESS = "SUCCESS",
+    MATCH = "MATCH",
+    NOT_MATCH = "NOT_MATCH",
+    ERROR = "ERROR",
 }
 
-export const encryptWithAES = (text: any, appPass: string) => {
-  return CryptoJS.AES.encrypt(text, appPass).toString();
-};
 
-export const decryptWithAES = (ciphertext: any, appPass: string) => {
-  const bytes = CryptoJS.AES.decrypt(ciphertext, appPass);
-  const originalText = bytes.toString(CryptoJS.enc.Utf8);
-  return originalText;
-};
+const generateKey = (password: string, salt: string, cost: number, length: number) => Aes.pbkdf2(password, salt, cost, length)
 
-export const encryptAppPassword = (pass: string) => {
-    return new Promise((resolve: any, reject: any) => {
-        bcrypt.genSalt(saltRounds, function(err, salt) {
-            if (err) {
-                reject(RESULT.ERROR)
-            } else {
-                bcrypt.hash(pass, salt, function(err, hash) {
-                    if (err) {
-                        reject(RESULT.ERROR)
-                    } else {
-                        AsyncStorage.setItem(APP_PASSWORD, hash)
-                        .then((res: any) => resolve(RESULT.SUCCESS))
-                        .catch((err: any) => reject(RESULT.ERROR))
-                    }
-                });
-            }
-        });
+const encryptData = (password: string, salt: string) => {
+    return Aes.randomKey(16).then(iv => {
+        return Aes.encrypt(password, salt, iv, 'aes-256-cbc').then(cipher => ({
+            cipher,
+            iv,
+        }))
     })
 }
 
-export const validatePassword = (pass: string) => {
+const decryptData = (encryptedData: any, key: any) => Aes.decrypt(encryptedData.cipher, key, encryptedData.iv, 'aes-256-cbc')
+
+export const registerAppPassword = (userPassword: string) => {
     return new Promise((resolve: any, reject: any) => {
-        AsyncStorage.getItem(APP_PASSWORD)
-        .then((res: any) => {
-            if (res) {
-                bcrypt.compare(pass, res, function(err, result) {
-                    if (err) {
-                        reject(RESULT.ERROR)
-                    } else if (result === true) {
-                        resolve(RESULT.MATCH);
-                    } else {
-                        reject(RESULT.NOT_MATCH)
-                    }
-                });
-            }
-            reject(RESULT.ERROR)
+        generateKey(userPassword, APP_PASSWORD, 5000, 256).then(key => {
+            AsyncStorage.setItem(APP_PASSWORD, key)
+            .then(() => {
+              resolve("SUCCESS")  
+            })
+            .catch((err: any) => {
+                reject(err);
+            })
         })
         .catch((err: any) => {
-
+            reject(err);
         })
-        
     })
 }
+
+export const validatePassword = (userPassword: string) => {
+    return new Promise((resolve: any, reject: any) => {
+        generateKey(userPassword, APP_PASSWORD, 5000, 256).then(key => {
+            AsyncStorage.getItem(APP_PASSWORD)
+            .then((res: any) => {
+                if (res === key) {
+                    resolve("MATCH")
+                } else {
+                    reject("FAILED")
+                }
+            })
+            .catch((err: any) => {
+                reject(err)
+            })
+        })
+    })
+}
+
+// try {
+//     generateKey('Arnold', 'salt', 5000, 256).then(key => {
+//         console.log('Key:', key)
+//         encryptData('These violent delights have violent ends', key)
+//             .then(({ cipher, iv }) => {
+//                 console.log('Encrypted:', cipher)
+
+//                 decryptData({ cipher, iv }, key)
+//                     .then(text => {
+//                         console.log('Decrypted:', text)
+//                     })
+//                     .catch(error => {
+//                         console.log(error)
+//                     })
+
+//                 Aes.hmac256(cipher, key).then(hash => {
+//                     console.log('HMAC', hash)
+//                 })
+//             })
+//             .catch(error => {
+//                 console.log(error)
+//             })
+//     })
+// } catch (e) {
+//     console.error(e)
+// }
