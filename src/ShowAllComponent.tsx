@@ -11,23 +11,15 @@ import { decryptPassword, validatePassword } from "./Encrypt";
 
 export default function ShowAllComponent(): JSX.Element {
     
-    const { data, password, dispatch } = useServiceContext();
+    const { data } = useServiceContext();
     const [pass, setPass] = useState("");
     const [match, setMatch] = useState("FALSE");
     const [log, setLog] = useState<any>("");
-    const [thispass, setThisPass] = useState("");
+    const [thispass, setThisPass] = useState({id: "", value: ""});
     
     const matchPass = () => {
       validatePassword(pass)
       .then((res: any) => {
-        // dispatch({
-        //   keys: ['password'],
-        //   values: [{
-        //       load: true,
-        //       hasPassword: true,
-        //       auth: true
-        //   }]
-        // })
         setMatch("TRUE")
         setLog("TRUE")
       })
@@ -62,13 +54,13 @@ export default function ShowAllComponent(): JSX.Element {
                 <View onTouchEnd={() => {
                   decryptPassword(JSON.parse(r.password))
                   .then((res: any) => {
-                    setThisPass(res);
+                    setThisPass({id: r.uniqueName, value: res});
                   })
                   .catch((err) => {
 
                   })
                 }}>
-                  <Text>View Password</Text><Text>{thispass}</Text>
+                  <Text>View Password</Text>{thispass.id === r.uniqueName ? <Text>{thispass.value}</Text> : null}
                 </View>
             </View>
         })}
