@@ -34,8 +34,7 @@ const initData: any = {
     password: {
         load: false,
         hasPassword: false,
-        auth: false,
-        value: ''
+        auth: false
     },
     dispatch: (e: any) => {
         console.log(e)
@@ -48,8 +47,7 @@ export const AppContext = React.createContext<any>({
     password: {
         load: false,
         hasPassword: false,
-        auth: false,
-        value: ''
+        auth: false
     },
     dispatch: (e: any) => {
         console.log(e)
@@ -82,7 +80,6 @@ const usePassword = (dispatch: any) => {
                         load: true,
                         hasPassword: true,
                         auth: false,
-                        value: res,
                     }]
                 })
             } else {
@@ -92,7 +89,6 @@ const usePassword = (dispatch: any) => {
                         load: true,
                         hasPassword: false,
                         auth: false,
-                        value: "",
                     }]
                 })
             }
@@ -103,8 +99,7 @@ const usePassword = (dispatch: any) => {
                 values: [{
                     load: true,
                     hasPassword: false,
-                    auth: false,
-                    value: ''
+                    auth: false
                 }]
             })
         })
