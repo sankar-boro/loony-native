@@ -17,7 +17,7 @@ export default function HomeScreen({navigation, route}: any): JSX.Element {
     useEffect(() => {
       setLog(JSON.stringify(password));
       if (password.load && !password.hasPassword) {
-        navigation.navigate('GenerateOneTimePassword', {name: 'Jane'})
+        navigation.navigate('GenerateOneTimePassword', {name: ''})
       }
     }, [password.load])
 
@@ -27,28 +27,28 @@ export default function HomeScreen({navigation, route}: any): JSX.Element {
         title: "ADD PASSWORD",
         iconName: <EntIcon name="lock" size={30} color="red" />,
         style: { color: "red", fontWeight: "bold" },
-        navigate: () => navigation.navigate('PasswordComponent', {name: 'Jane'})
+        navigate: () => navigation.navigate('PasswordComponent', {name: ''})
       },
       {
         id: 2,
         style: { color: "green", fontWeight: "bold" },
         title: "ENCRYPT IMAGE",
         iconName: <FontAIcon name="photo" size={30} color="green" />,
-        navigate: () => navigation.navigate('ImageComponent', {name: 'Jane'})
+        navigate: () => navigation.navigate('ImageComponent', {name: ''})
       },
       {
         id: 3,
         style: { color: "blue", fontWeight: "bold" },
         title: "VIEW ALL",
         iconName: <AndIcon name="eye" size={30} color="blue" />,
-        navigate: () => navigation.navigate('ShowAllComponent', {name: 'Jane'})
+        navigate: () => navigation.navigate('ShowAllComponent', {name: ''})
       },
       {
         id: 4,
         style: { color: "purple", fontWeight: "bold" },
         title: "UPDATE PASSWORD",
         iconName: <EntIcon name="lock" size={30} color="purple" />,
-        navigate: () => navigation.navigate('GenerateOneTimePassword', {name: 'Jane'})
+        navigate: () => navigation.navigate('GenerateOneTimePassword', {name: ''})
       }
     ];
 
