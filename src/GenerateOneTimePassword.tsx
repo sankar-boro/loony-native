@@ -9,34 +9,36 @@ import {
 import { useServiceContext } from "./ServiceProvider";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { APP_PASSWORD } from "./types";
+import { registerAppPassword } from "./Encrypt";
 
 export default function GenerateOneTimePassword({navigation, route}: any): JSX.Element {
     
     const { dispatch, password } = useServiceContext();
     const [pass, setPassword] = useState("");
-    const [error, setError] = useState();
+    const [error, setError] = useState<any>("");
     const [log, setLog] = useState("");
 
     useEffect(() => {
-        setLog(JSON.stringify(password))
-    }, []);
+        // setLog(JSON.stringify(password))
+    }, [password.hasPassword]);
 
     const save = () => {
-        AsyncStorage.setItem(APP_PASSWORD, pass)
+        registerAppPassword(pass.trim())
         .then((res: any) => {
-            dispatch({
-                keys: ['password'],
-                values: [{
-                    load: true,
-                    hasPassword: true,
-                    auth: false,
-                    value: pass
-                }]
-            })
-            navigation.navigate('Home', {name: 'Jane'})
+            if (res === 'SUCCESS') {
+                dispatch({
+                    keys: ['password'],
+                    values: [{
+                        load: true,
+                        hasPassword: true,
+                        auth: false
+                    }]
+                })
+                navigation.navigate('Login', {name: ''})
+            }
         })
         .catch((err: any) => {
-            setError(err);
+            setError(JSON.stringify(err));
         })
     }
 
@@ -59,10 +61,10 @@ export default function GenerateOneTimePassword({navigation, route}: any): JSX.E
 
     return (
       <View style={styles.container}>
-        {/* <View>
+        <View>
             <Text>Log</Text>
             <Text>{log}</Text>
-        </View> */}
+        </View>
         {error ? <Text>{error}</Text> : null }
         <TextInput 
         onChangeText={setPassword} 
