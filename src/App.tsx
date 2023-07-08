@@ -8,6 +8,7 @@ import PasswordComponent from './PasswordComponent';
 import { ServiceProvider } from './ServiceProvider';
 import ShowAllComponent from './ShowAllComponent';
 import GenerateOneTimePassword from './GenerateOneTimePassword';
+import LoginApp from './LoginApp';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,6 +17,11 @@ function Navigation(): JSX.Element {
     <NavigationContainer>
       <ServiceProvider>
         <Stack.Navigator>
+          <Stack.Screen 
+          name="Login"
+          component={LoginApp}
+          options={{title: 'Login'}}
+          />
           <Stack.Screen
             name="Home"
             component={HomeScreen}

@@ -5,6 +5,9 @@ import {
   View
 } from 'react-native';
 import { useServiceContext } from './ServiceProvider';
+import AndIcon from 'react-native-vector-icons/AntDesign';
+import FontAIcon from 'react-native-vector-icons/FontAwesome';
+import EntIcon from 'react-native-vector-icons/Entypo';
 
 export default function HomeScreen({navigation, route}: any): JSX.Element {
     
@@ -14,7 +17,7 @@ export default function HomeScreen({navigation, route}: any): JSX.Element {
     useEffect(() => {
       setLog(JSON.stringify(password));
       if (password.load && !password.hasPassword) {
-        navigation.navigate('GeneratePassword', {name: 'Jane'})
+        navigation.navigate('GenerateOneTimePassword', {name: 'Jane'})
       }
     }, [password.load])
 
@@ -22,6 +25,7 @@ export default function HomeScreen({navigation, route}: any): JSX.Element {
       {
         id: 1,
         title: "ADD PASSWORD",
+        iconName: <EntIcon name="lock" size={30} color="red" />,
         style: { color: "red", fontWeight: "bold" },
         navigate: () => navigation.navigate('PasswordComponent', {name: 'Jane'})
       },
@@ -29,18 +33,21 @@ export default function HomeScreen({navigation, route}: any): JSX.Element {
         id: 2,
         style: { color: "green", fontWeight: "bold" },
         title: "ENCRYPT IMAGE",
+        iconName: <FontAIcon name="photo" size={30} color="green" />,
         navigate: () => navigation.navigate('ImageComponent', {name: 'Jane'})
       },
       {
         id: 3,
         style: { color: "blue", fontWeight: "bold" },
         title: "VIEW ALL",
+        iconName: <AndIcon name="eye" size={30} color="blue" />,
         navigate: () => navigation.navigate('ShowAllComponent', {name: 'Jane'})
       },
       {
         id: 4,
         style: { color: "purple", fontWeight: "bold" },
         title: "UPDATE PASSWORD",
+        iconName: <EntIcon name="lock" size={30} color="purple" />,
         navigate: () => navigation.navigate('GenerateOneTimePassword', {name: 'Jane'})
       }
     ];
@@ -53,8 +60,9 @@ export default function HomeScreen({navigation, route}: any): JSX.Element {
         </View> */}
         <View style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between" }}>
           {renderCtxData.map((data: any) => {
-            return <View key={data.id} style={styles.card}>
-            <Text style={{ ...data.style }} onPress={data.navigate}>{data.title}</Text>
+            return <View key={data.id} style={styles.card} onTouchEnd={data.navigate}>
+              <View style={{ width: 50, marginLeft: 12 }}>{data.iconName}</View>
+            <Text style={{ ...data.style }}>{data.title}</Text>
           </View>
           })}
         </View>
@@ -74,14 +82,15 @@ export default function HomeScreen({navigation, route}: any): JSX.Element {
     },
     card: {
       width: "100%", 
-      height: 50, 
       borderWidth: 1, 
       borderColor: "#ebe8e8", 
       marginTop: 10, 
       borderRadius: 5, 
       padding: 5, 
-      backgroundColor: "white", 
-      justifyContent: "center",
-      alignItems: "center"
+      backgroundColor: "white",
+      alignItems: "center",
+      display: "flex",
+      flexDirection: "row",
+      height: 60
     }
   });
