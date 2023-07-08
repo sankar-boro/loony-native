@@ -32,7 +32,6 @@ export default function LoginApp({navigation, route}: any): JSX.Element {
               auth: true
           }]
         })
-        navigation.navigate("Home", {name: ""})
       })
       .catch((err: any) => {
         setLog(JSON.stringify(err))

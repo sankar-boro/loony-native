@@ -5,7 +5,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import HomeScreen from './Home';
 import ImageComponent from './ImageComponent';
 import PasswordComponent from './PasswordComponent';
-import { ServiceProvider } from './ServiceProvider';
+import { AppContext, ServiceProvider } from './ServiceProvider';
 import ShowAllComponent from './ShowAllComponent';
 import GenerateOneTimePassword from './GenerateOneTimePassword';
 import LoginApp from './LoginApp';
@@ -16,23 +16,31 @@ function Navigation(): JSX.Element {
   return (
     <NavigationContainer>
       <ServiceProvider>
-        <Stack.Navigator>
-          <Stack.Screen 
-          name="Login"
-          component={LoginApp}
-          options={{title: 'Login'}}
-          />
-          <Stack.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{title: 'Loony'}}
-          />
-          <Stack.Screen name="PasswordComponent" component={PasswordComponent} options={{title: 'Encrypt Password'}} />
-          <Stack.Screen name="ImageComponent" component={ImageComponent} options={{title: 'Encrypt Image'}} />
-          <Stack.Screen name="ShowAllComponent" component={ShowAllComponent} options={{title: 'View All Password'}} />
-          <Stack.Screen name="GenerateOneTimePassword" component={GenerateOneTimePassword} options={{title: 'Generate One Time Password'}} />
-
-        </Stack.Navigator>
+      <AppContext.Consumer>
+        {({ password }) => {
+          if (password.auth === false) {
+            return <Stack.Navigator>
+              <Stack.Screen 
+              name="Login"
+              component={LoginApp}
+              options={{title: 'Login'}}
+              />
+              <Stack.Screen name="GenerateOneTimePassword" component={GenerateOneTimePassword} options={{title: 'Generate One Time Password'}} />
+            </Stack.Navigator> 
+          } else {
+            return <Stack.Navigator>
+              <Stack.Screen
+                name="Home"
+                component={HomeScreen}
+                options={{title: 'Loony'}}
+              />
+              <Stack.Screen name="PasswordComponent" component={PasswordComponent} options={{title: 'Encrypt Password'}} />
+              <Stack.Screen name="ImageComponent" component={ImageComponent} options={{title: 'Encrypt Image'}} />
+              <Stack.Screen name="ShowAllComponent" component={ShowAllComponent} options={{title: 'View All Password'}} />
+            </Stack.Navigator>
+          }
+        }}
+      </AppContext.Consumer>
       </ServiceProvider>
     </NavigationContainer>
   );
