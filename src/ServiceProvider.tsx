@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useReducer } from "react";
 import RNFS from "react-native-fs";
 import Fuse from 'fuse.js'
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { APP_PASSWORD } from "./types";
 
 export const setters = (state: any, action: any) => {
     const { keys, values } = action;
@@ -61,8 +62,8 @@ const useApp = (dispatch: any) => {
         .then((readFileRes: any) => {
             let dj = JSON.parse(readFileRes);  
             dispatch({
-                keys: ['data', 'fuse'],
-                values: [dj, new Fuse(dj, options)]
+                keys: ['fuse'],
+                values: [new Fuse(dj, options)]
             })
         })
       .catch((err: any) => {
@@ -73,7 +74,7 @@ const useApp = (dispatch: any) => {
 
 const usePassword = (dispatch: any) => {
     useEffect(() => {
-        AsyncStorage.getItem("one_pass").then((res: any) => {
+        AsyncStorage.getItem(APP_PASSWORD).then((res: any) => {
             if (res) {
                 dispatch({
                     keys: ['password'],

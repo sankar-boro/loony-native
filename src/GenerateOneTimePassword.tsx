@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useServiceContext } from "./ServiceProvider";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { APP_PASSWORD } from "./types";
 
 export default function GenerateOneTimePassword({navigation, route}: any): JSX.Element {
     
@@ -21,7 +22,7 @@ export default function GenerateOneTimePassword({navigation, route}: any): JSX.E
     }, []);
 
     const save = () => {
-        AsyncStorage.setItem("one_pass", pass)
+        AsyncStorage.setItem(APP_PASSWORD, pass)
         .then((res: any) => {
             dispatch({
                 keys: ['password'],
@@ -40,7 +41,7 @@ export default function GenerateOneTimePassword({navigation, route}: any): JSX.E
     }
 
     const resetPassword = () => {
-        AsyncStorage.removeItem("one_pass")
+        AsyncStorage.removeItem(APP_PASSWORD)
         .then((res: any) => {
             dispatch({
                 keys: ['password'],
