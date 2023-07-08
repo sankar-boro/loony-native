@@ -7,21 +7,38 @@ import {
   Button
 } from 'react-native';
 import { useServiceContext } from "./ServiceProvider";
+import { decryptPassword, validatePassword } from "./Encrypt";
 
 export default function ShowAllComponent(): JSX.Element {
     
-    const { data, password } = useServiceContext();
+    const { data, password, dispatch } = useServiceContext();
     const [pass, setPass] = useState("");
     const [match, setMatch] = useState("FALSE");
+    const [log, setLog] = useState<any>("");
+    const [thispass, setThisPass] = useState("");
     
     const matchPass = () => {
-      if (pass === password.value) {
+      validatePassword(pass)
+      .then((res: any) => {
+        // dispatch({
+        //   keys: ['password'],
+        //   values: [{
+        //       load: true,
+        //       hasPassword: true,
+        //       auth: true
+        //   }]
+        // })
         setMatch("TRUE")
-      }
+        setLog("TRUE")
+      })
+      .catch((err: any) => {
+        setLog(JSON.stringify(err))
+      });
     }
 
     return (
       <View style={styles.container}>
+        <View><Text>{log}</Text></View>
         <View style={{ marginBottom: 20 }}>
         <TextInput 
         onChangeText={setPass} 
@@ -42,7 +59,17 @@ export default function ShowAllComponent(): JSX.Element {
             return <View key={r.uniqueName} style={styles.cardContainer}>
                 <Text>{r.uniqueName}</Text>
                 <Text>{r.username}</Text>
-                <Text>{r.password}</Text>
+                <View onTouchEnd={() => {
+                  decryptPassword(JSON.parse(r.password))
+                  .then((res: any) => {
+                    setThisPass(res);
+                  })
+                  .catch((err) => {
+
+                  })
+                }}>
+                  <Text>View Password</Text><Text>{thispass}</Text>
+                </View>
             </View>
         })}
       </View>

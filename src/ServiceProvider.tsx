@@ -60,8 +60,8 @@ const useApp = (dispatch: any) => {
         .then((readFileRes: any) => {
             let dj = JSON.parse(readFileRes);  
             dispatch({
-                keys: ['fuse'],
-                values: [new Fuse(dj, options)]
+                keys: ['fuse', 'data'],
+                values: [new Fuse(dj, options), dj]
             })
         })
       .catch((err: any) => {

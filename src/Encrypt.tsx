@@ -12,9 +12,9 @@ export enum RESULT {
 
 const generateKey = (password: string, salt: string, cost: number, length: number) => Aes.pbkdf2(password, salt, cost, length)
 
-const encryptData = (password: string, salt: string) => {
+const encryptData = (text: string, key: string) => {
     return Aes.randomKey(16).then(iv => {
-        return Aes.encrypt(password, salt, iv, 'aes-256-cbc').then(cipher => ({
+        return Aes.encrypt(text, key, iv, 'aes-256-cbc').then(cipher => ({
             cipher,
             iv,
         }))
@@ -22,6 +22,44 @@ const encryptData = (password: string, salt: string) => {
 }
 
 const decryptData = (encryptedData: any, key: any) => Aes.decrypt(encryptedData.cipher, key, encryptedData.iv, 'aes-256-cbc')
+
+export const encryptPassword = (password: string) => {
+    return new Promise((resolve: any, reject: any) => {
+        AsyncStorage.getItem(APP_PASSWORD)
+        .then((res: any) => {
+            if (res) {
+                encryptData(password, res)
+                .then((res) => {
+                    resolve(res)
+                })
+                .catch((err) => {
+                    reject(err);
+                })
+            } else {
+                reject(RESULT.ERROR)
+            }
+        })
+    })
+}
+
+export const decryptPassword = (enc_password: string) => {
+    return new Promise((resolve: any, reject: any) => {
+        AsyncStorage.getItem(APP_PASSWORD)
+        .then((res: any) => {
+            if (res) {
+                decryptData(enc_password, res)
+                .then((res) => {
+                    resolve(res)
+                })
+                .catch((err) => {
+                    reject(err);
+                })
+            } else {
+                reject(RESULT.ERROR)
+            }
+        })
+    })
+}
 
 export const registerAppPassword = (userPassword: string) => {
     return new Promise((resolve: any, reject: any) => {
@@ -57,30 +95,3 @@ export const validatePassword = (userPassword: string) => {
         })
     })
 }
-
-// try {
-//     generateKey('Arnold', 'salt', 5000, 256).then(key => {
-//         console.log('Key:', key)
-//         encryptData('These violent delights have violent ends', key)
-//             .then(({ cipher, iv }) => {
-//                 console.log('Encrypted:', cipher)
-
-//                 decryptData({ cipher, iv }, key)
-//                     .then(text => {
-//                         console.log('Decrypted:', text)
-//                     })
-//                     .catch(error => {
-//                         console.log(error)
-//                     })
-
-//                 Aes.hmac256(cipher, key).then(hash => {
-//                     console.log('HMAC', hash)
-//                 })
-//             })
-//             .catch(error => {
-//                 console.log(error)
-//             })
-//     })
-// } catch (e) {
-//     console.error(e)
-// }

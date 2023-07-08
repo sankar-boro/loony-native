@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useServiceContext } from "./ServiceProvider";
 import RNFS from "react-native-fs";
+import { encryptPassword } from "./Encrypt";
 
 export default function PasswordComponent(): JSX.Element {
     const { data, fuse, dispatch } = useServiceContext();
@@ -18,25 +19,34 @@ export default function PasswordComponent(): JSX.Element {
     const [error, setError] = useState<any>(null);
     const [searchRes, setSearchRes] = useState([]);
 
+    const savePassword = (res: any) => {
+      let newData = { username, password: JSON.stringify(res), uniqueName };
+      let newGroup: any = [...data, newData];
+      fuse.add(newData)
+      dispatch({
+        keys: ['data'],
+        values: newGroup
+      })
+      RNFS.writeFile(`${RNFS.ExternalDirectoryPath}/password.json`, JSON.stringify(newGroup))
+      .then((readFileRes: any) => {  
+          setUniqueName("");
+          setUsername("");
+          setPassword("");
+      })
+      .catch((err: any) => {
+        setError({inputValues: null, writeFile: err, searchText: null });
+      })
+    }
+
     const save = () => {
       if (!uniqueName || !username || !password) {
         setError({inputValues: "Cannot have empty field values for username, password or url.", writeFile: null, searchText: null });
       } else {
-        let newData = { username, password, uniqueName };
-        let newGroup: any = [...data, newData];
-        fuse.add(newData)
-        dispatch({
-          keys: ['data'],
-          values: newGroup
-        })
-        RNFS.writeFile(`${RNFS.ExternalDirectoryPath}/password.json`, JSON.stringify(newGroup))
-        .then((readFileRes: any) => {  
-            setUniqueName("");
-            setUsername("");
-            setPassword("");
-        })
-        .catch((err: any) => {
-          setError({inputValues: null, writeFile: err, searchText: null });
+        encryptPassword(password)
+        .then((res: any) => {
+          if (res) {
+            savePassword(res);
+          }
         })
       }
     }
