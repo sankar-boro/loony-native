@@ -6,13 +6,55 @@ import {
   Button,
   Text
 } from 'react-native';
-import { useServiceContext } from "./ServiceProvider";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useServiceContext } from './ServiceProvider';
+import { validatePassword } from "./Encrypt";
 
 export default function LoginApp({navigation, route}: any): JSX.Element {
+    const { password, dispatch } = useServiceContext();
+    const [log, setLog] = useState<any>("");
+    const [pass, setPass] = useState("");
+
+    useEffect(() => {
+      setLog(JSON.stringify(password));
+      if (password.load && !password.hasPassword) {
+        navigation.navigate('GenerateOneTimePassword', {name: ''})
+      }
+    }, [password.load, password.hasPassword]);
+
+    const login = () => {
+      validatePassword(pass)
+      .then((res: any) => {
+        dispatch({
+          keys: ['password'],
+          values: [{
+              load: true,
+              hasPassword: true,
+              auth: true
+          }]
+        })
+        navigation.navigate("Home", {name: ""})
+      })
+      .catch((err: any) => {
+        setLog(JSON.stringify(err))
+      });
+    }
+
     return (
       <View style={styles.container}>
-        <Text>Login</Text>
+        <Text>{log}</Text>
+        <TextInput 
+          onChangeText={setPass} 
+          value={pass} 
+          placeholderTextColor="#cccccc" 
+          style={styles.input} 
+          placeholder='App Password' 
+        />
+        <Button
+          onPress={login}
+          title="Login"
+          color="#841584"
+          accessibilityLabel="Login"
+        />
       </View>
     );
 }
