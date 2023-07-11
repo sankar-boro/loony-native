@@ -10,6 +10,7 @@ import { useServiceContext } from "./ServiceProvider";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { APP_PASSWORD } from "./types";
 import { registerAppPassword } from "./Encrypt";
+import RNFS from "react-native-fs";
 
 export default function GenerateOneTimePassword({navigation, route}: any): JSX.Element {
     
@@ -18,23 +19,25 @@ export default function GenerateOneTimePassword({navigation, route}: any): JSX.E
     const [error, setError] = useState<any>("");
     const [log, setLog] = useState("");
 
-    useEffect(() => {
-        // setLog(JSON.stringify(password))
-    }, [password.hasPassword]);
-
     const save = () => {
         registerAppPassword(pass.trim())
         .then((res: any) => {
             if (res === 'SUCCESS') {
-                dispatch({
-                    keys: ['password'],
-                    values: [{
-                        load: true,
-                        hasPassword: true,
-                        auth: false
-                    }]
+                RNFS.writeFile(`${RNFS.ExternalDirectoryPath}/password.json`, JSON.stringify([]))
+                .then((readFileRes: any) => {    
+                    dispatch({
+                        keys: ['password', 'data'],
+                        values: [{
+                            load: true,
+                            hasPassword: true,
+                            auth: false
+                        }, []]
+                    })
+                    navigation.navigate('Login', {name: ''})
                 })
-                navigation.navigate('Login', {name: ''})
+                .catch((err: any) => {
+            
+                })
             }
         })
         .catch((err: any) => {

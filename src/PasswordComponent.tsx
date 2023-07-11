@@ -20,15 +20,15 @@ export default function PasswordComponent(): JSX.Element {
     const [searchRes, setSearchRes] = useState([]);
 
     const savePassword = (res: any) => {
-      let newData = { username, password: JSON.stringify(res), uniqueName };
-      let newGroup: any = [...data, newData];
+      let newData = [{ username, password: JSON.stringify(res), uniqueName }];
+      let newGroup: any = [...data, ...newData];
       fuse.add(newData)
       dispatch({
         keys: ['data'],
-        values: newGroup
+        values: [newGroup]
       })
       RNFS.writeFile(`${RNFS.ExternalDirectoryPath}/password.json`, JSON.stringify(newGroup))
-      .then((readFileRes: any) => {  
+      .then(() => {  
           setUniqueName("");
           setUsername("");
           setPassword("");
