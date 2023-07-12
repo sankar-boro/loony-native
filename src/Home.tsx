@@ -49,6 +49,13 @@ export default function HomeScreen({navigation, route}: any): JSX.Element {
         title: "UPDATE PASSWORD",
         iconName: <EntIcon name="lock" size={30} color="purple" />,
         navigate: () => navigation.navigate('GenerateOneTimePassword', {name: ''})
+      },
+      {
+        id: 5,
+        style: { color: "purple", fontWeight: "bold" },
+        title: "PERMISSIONS",
+        iconName: <EntIcon name="lock" size={30} color="purple" />,
+        navigate: () => navigation.navigate('PermissionsPage', {name: ''})
       }
     ];
 
