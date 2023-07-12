@@ -5,7 +5,7 @@ import {
   Button,
   StyleSheet
 } from 'react-native';
-import Animated, { Extrapolate, interpolate, useAnimatedGestureHandler, useAnimatedProps, useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import Reanimated, { Extrapolate, interpolate, useAnimatedGestureHandler, useAnimatedProps, useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import {
   CameraDeviceFormat,
   CameraRuntimeError,
@@ -20,8 +20,15 @@ import { CONTENT_SPACING, MAX_ZOOM_FACTOR, SAFE_AREA_PADDING } from './Constants
 import { Camera, frameRateIncluded } from 'react-native-vision-camera';
 import { useIsForeground } from "./hooks/useIsForeground";
 import { useIsFocused } from '@react-navigation/core';
-import { PinchGestureHandler, PinchGestureHandlerGestureEvent, TapGestureHandler } from 'react-native-gesture-handler';
+import { GestureHandlerRootView, PinchGestureHandler, PinchGestureHandlerGestureEvent, TapGestureHandler } from 'react-native-gesture-handler';
 import { examplePlugin } from './frame-processors/ExamplePlugin';
+import { StatusBarBlurBackground } from './views/StatusBarBlurBackground';
+import { CaptureButton } from './views/CaptureButton';
+
+const ReanimatedCamera = Reanimated.createAnimatedComponent(Camera);
+Reanimated.addWhitelistedNativeProps({
+  zoom: true,
+});
 
 const SCALE_FULL_ZOOM = 3;
 const BUTTON_SIZE = 40;
@@ -209,10 +216,54 @@ export default function ImageComponent({ navigation }: any): JSX.Element {
   }, []);
 
   return (
-    <>
-      <Animated.View style={[styles.box, animatedStyles]} />
-      <Button onPress={() => (offset.value = Math.random())} title="Move" />
-    </>
+    <View style={styles.container}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+      {device != null && (
+        <PinchGestureHandler onGestureEvent={onPinchGesture} enabled={isActive}>
+          <Reanimated.View style={StyleSheet.absoluteFill}>
+            <TapGestureHandler onEnded={onDoubleTap} numberOfTaps={2}>
+              <ReanimatedCamera
+                ref={camera}
+                style={StyleSheet.absoluteFill}
+                device={device}
+                format={format}
+                fps={fps}
+                hdr={enableHdr}
+                lowLightBoost={device.supportsLowLightBoost && enableNightMode}
+                isActive={isActive}
+                onInitialized={onInitialized}
+                onError={onError}
+                enableZoomGesture={false}
+                animatedProps={cameraAnimatedProps}
+                photo={true}
+                video={true}
+                audio={hasMicrophonePermission}
+                // frameProcessor={device.supportsParallelVideoProcessing ? frameProcessor : undefined}
+                orientation="portrait"
+                frameProcessorFps={1}
+                onFrameProcessorPerformanceSuggestionAvailable={onFrameProcessorSuggestionAvailable}
+              />
+            </TapGestureHandler>
+          </Reanimated.View>
+        </PinchGestureHandler>
+      )}
+
+      <CaptureButton
+        style={styles.captureButton}
+        camera={camera}
+        onMediaCaptured={onMediaCaptured}
+        cameraZoom={zoom}
+        minZoom={minZoom}
+        maxZoom={maxZoom}
+        flash={supportsFlash ? flash : 'off'}
+        enabled={isCameraInitialized && isActive}
+        setIsPressingButton={setIsPressingButton}
+      />
+
+      <StatusBarBlurBackground />
+
+      </GestureHandlerRootView>
+    </View>
   );
 }
 
