@@ -29,7 +29,7 @@ export default function PermissionsPage({ navigation }: any): React.ReactElement
   }, []);
 
   useEffect(() => {
-    if (cameraPermissionStatus === 'authorized' && microphonePermissionStatus === 'authorized') navigation.replace('CameraPage');
+    if (cameraPermissionStatus === 'authorized' && microphonePermissionStatus === 'authorized') navigation.replace('ImageComponent');
   }, [cameraPermissionStatus, microphonePermissionStatus, navigation]);
 
   return (

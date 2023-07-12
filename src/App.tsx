@@ -10,6 +10,7 @@ import ShowAllComponent from './ShowAllComponent';
 import GenerateOneTimePassword from './GenerateOneTimePassword';
 import LoginApp from './LoginApp';
 import PermissionsPage from './PermissionsPage';
+import { MediaPage } from './MediaPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +35,11 @@ function Navigation(): JSX.Element {
                 name="Home"
                 component={HomeScreen}
                 options={{title: 'Loony'}}
+              />
+              <Stack.Screen
+                name="MediaPage"
+                component={MediaPage}
+                options={{title: 'Media'}}
               />
               <Stack.Screen
                 name="PermissionsPage"
