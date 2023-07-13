@@ -6,18 +6,17 @@ import {
   Button,
   Text
 } from 'react-native';
-import { useServiceContext } from './ServiceProvider';
-import { validatePassword } from "./Encrypt";
+import { useServiceContext } from '../ServiceProvider';
+import { validatePassword } from "../Encrypt";
+import { NAMES } from '../utils/Constants';
 
-export default function LoginApp({navigation, route}: any): JSX.Element {
+export default function LoginPage({navigation, route}: any): JSX.Element {
     const { password, dispatch } = useServiceContext();
-    const [log, setLog] = useState<any>("");
     const [pass, setPass] = useState("");
 
     useEffect(() => {
-      setLog(JSON.stringify(password));
       if (password.load && !password.hasPassword) {
-        navigation.navigate('GenerateOneTimePassword', {name: ''})
+        navigation.navigate(NAMES.CREATE_APP_PASSWORD_PAGE, {name: ''})
       }
     }, [password.load, password.hasPassword]);
 
@@ -34,13 +33,11 @@ export default function LoginApp({navigation, route}: any): JSX.Element {
         })
       })
       .catch((err: any) => {
-        setLog(JSON.stringify(err))
       });
     }
 
     return (
       <View style={styles.container}>
-        <Text>{log}</Text>
         <TextInput 
           onChangeText={setPass} 
           value={pass} 

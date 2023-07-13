@@ -5,25 +5,24 @@ import {
   Button,
   StyleSheet
 } from 'react-native';
-import Reanimated, { Extrapolate, interpolate, useAnimatedGestureHandler, useAnimatedProps, useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import Reanimated, { 
+  Extrapolate, interpolate, useAnimatedGestureHandler, 
+  useAnimatedProps, useSharedValue } from 'react-native-reanimated';
 import {
-  CameraDeviceFormat,
-  CameraRuntimeError,
-  FrameProcessorPerformanceSuggestion,
-  PhotoFile,
-  sortFormats,
-  useCameraDevices,
-  useFrameProcessor,
-  VideoFile,
+  CameraDeviceFormat, CameraPermissionStatus, CameraRuntimeError, FrameProcessorPerformanceSuggestion,
+  PhotoFile, sortFormats, useCameraDevices, useFrameProcessor, VideoFile,
 } from 'react-native-vision-camera';
-import { CONTENT_SPACING, MAX_ZOOM_FACTOR, SAFE_AREA_PADDING } from './Constants';
+import { CONTENT_SPACING, MAX_ZOOM_FACTOR, NAMES, SAFE_AREA_PADDING } from '../utils/Constants';
 import { Camera, frameRateIncluded } from 'react-native-vision-camera';
-import { useIsForeground } from "./hooks/useIsForeground";
+import { useIsForeground } from "../hooks/useIsForeground";
 import { useIsFocused } from '@react-navigation/core';
 import { GestureHandlerRootView, PinchGestureHandler, PinchGestureHandlerGestureEvent, TapGestureHandler } from 'react-native-gesture-handler';
-import { examplePlugin } from './frame-processors/ExamplePlugin';
-import { StatusBarBlurBackground } from './views/StatusBarBlurBackground';
-import { CaptureButton } from './views/CaptureButton';
+import { examplePlugin } from '../frame-processors/ExamplePlugin';
+import { StatusBarBlurBackground } from '../views/StatusBarBlurBackground';
+import { CaptureButton } from '../views/CaptureButton';
+import { PressableOpacity } from 'react-native-pressable-opacity';
+import IonIcon from 'react-native-vector-icons/Ionicons';
+import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ReanimatedCamera = Reanimated.createAnimatedComponent(Camera);
 Reanimated.addWhitelistedNativeProps({
@@ -33,11 +32,13 @@ Reanimated.addWhitelistedNativeProps({
 const SCALE_FULL_ZOOM = 3;
 const BUTTON_SIZE = 40;
 
-export default function ImageComponent({ navigation }: any): JSX.Element {
-  const offset = useSharedValue(0);
+export default function CameraPage({ navigation }: any): JSX.Element {
   const camera = useRef<Camera>(null);
   const [isCameraInitialized, setIsCameraInitialized] = useState(false);
   const [hasMicrophonePermission, setHasMicrophonePermission] = useState(false);
+  const [cameraPermission, setCameraPermission] = useState<CameraPermissionStatus>();
+  const [microphonePermission, setMicrophonePermission] = useState<CameraPermissionStatus>();
+
   const zoom = useSharedValue(0);
   const isPressingButton = useSharedValue(false);
 
@@ -58,13 +59,6 @@ export default function ImageComponent({ navigation }: any): JSX.Element {
     if (device?.formats == null) return [];
     return device.formats.sort(sortFormats);
   }, [device?.formats]);
-
-  const animatedStyles = useAnimatedStyle(() => {
-    'worklet' // this one is Important
-    return {
-      transform: [{ translateX: offset.value * 255 }],
-    };
-  }, []);
 
   //#region Memos
   const [is60Fps, setIs60Fps] = useState(true);
@@ -144,7 +138,7 @@ export default function ImageComponent({ navigation }: any): JSX.Element {
   const onMediaCaptured = useCallback(
     (media: PhotoFile | VideoFile, type: 'photo' | 'video') => {
       console.log(`Media captured! ${JSON.stringify(media)}`);
-      navigation.navigate('MediaPage', {
+      navigation.navigate(NAMES.MEDIA_PAGE, {
         path: media.path,
         type: type,
       });
@@ -194,6 +188,15 @@ export default function ImageComponent({ navigation }: any): JSX.Element {
   });
   //#endregion
 
+  useEffect(() => {
+    Camera.getCameraPermissionStatus().then(setCameraPermission);
+    Camera.getMicrophonePermissionStatus().then(setMicrophonePermission);
+  }, []);
+
+  console.log(`Re-rendering Navigator. Camera: ${cameraPermission} | Microphone: ${microphonePermission}`);
+
+  
+
   if (device != null && format != null) {
     console.log(
       `Re-rendering camera page with ${isActive ? 'active' : 'inactive'} camera. ` +
@@ -214,7 +217,16 @@ export default function ImageComponent({ navigation }: any): JSX.Element {
   const onFrameProcessorSuggestionAvailable = useCallback((suggestion: FrameProcessorPerformanceSuggestion) => {
     console.log(`Suggestion available! ${suggestion.type}: Can do ${suggestion.suggestedFrameProcessorFps} FPS`);
   }, []);
+  
+  if (cameraPermission == undefined || microphonePermission == undefined) {
+    return <View><Text>Loading</Text></View>;
+  }
+  if (cameraPermission != 'authorized' || microphonePermission != "authorized") {
+    navigation.navigate(NAMES.PERMISSIONS_PAGE, { name: "Permissions" });
+  }
 
+  console.log(cameraPermission);
+  
   return (
     <View style={styles.container}>
       <GestureHandlerRootView style={{ flex: 1 }}>
@@ -262,6 +274,36 @@ export default function ImageComponent({ navigation }: any): JSX.Element {
 
       <StatusBarBlurBackground />
 
+      <View style={styles.rightButtonRow}>
+        {supportsCameraFlipping && (
+          <PressableOpacity style={styles.button} onPress={onFlipCameraPressed} disabledOpacity={0.4}>
+            <IonIcon name="camera-reverse" color="white" size={24} />
+          </PressableOpacity>
+        )}
+        {supportsFlash && (
+          <PressableOpacity style={styles.button} onPress={onFlashPressed} disabledOpacity={0.4}>
+            <IonIcon name={flash === 'on' ? 'flash' : 'flash-off'} color="white" size={24} />
+          </PressableOpacity>
+        )}
+        {supports60Fps && (
+          <PressableOpacity style={styles.button} onPress={() => setIs60Fps(!is60Fps)}>
+            <Text style={styles.text}>
+              {is60Fps ? '60' : '30'}
+              {'\n'}FPS
+            </Text>
+          </PressableOpacity>
+        )}
+        {supportsHdr && (
+          <PressableOpacity style={styles.button} onPress={() => setEnableHdr((h) => !h)}>
+            <MaterialIcon name={enableHdr ? 'hdr' : 'hdr-off'} color="white" size={24} />
+          </PressableOpacity>
+        )}
+        {canToggleNightMode && (
+          <PressableOpacity style={styles.button} onPress={() => setEnableNightMode(!enableNightMode)} disabledOpacity={0.4}>
+            <IonIcon name={enableNightMode ? 'moon' : 'moon-outline'} color="white" size={24} />
+          </PressableOpacity>
+        )}
+      </View>
       </GestureHandlerRootView>
     </View>
   );

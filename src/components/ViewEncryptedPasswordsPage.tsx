@@ -6,31 +6,27 @@ import {
   TextInput,
   Button
 } from 'react-native';
-import { useServiceContext } from "./ServiceProvider";
-import { decryptPassword, validatePassword } from "./Encrypt";
+import { useServiceContext } from "../ServiceProvider";
+import { decryptPassword, validatePassword } from "../Encrypt";
 
-export default function ShowAllComponent(): JSX.Element {
+export default function ViewEncryptedPasswordsPage(): JSX.Element {
     
     const { data } = useServiceContext();
     const [pass, setPass] = useState("");
     const [match, setMatch] = useState("FALSE");
-    const [log, setLog] = useState<any>("");
     const [thispass, setThisPass] = useState({id: "", value: ""});
     
     const matchPass = () => {
       validatePassword(pass)
       .then((res: any) => {
         setMatch("TRUE")
-        setLog("TRUE")
       })
       .catch((err: any) => {
-        setLog(JSON.stringify(err))
       });
     }
 
     return (
       <View style={styles.container}>
-        <View><Text>{log}</Text></View>
         <View style={{ marginBottom: 20 }}>
         <TextInput 
         onChangeText={setPass} 
@@ -47,7 +43,7 @@ export default function ShowAllComponent(): JSX.Element {
         />
         </View>
 
-        {match === "TRUE" && data && data.map((r: any) => {
+        {match === "TRUE" && data && (data.length > 0) ? data.map((r: any) => {
             return <View key={r.uniqueName} style={styles.cardContainer}>
                 <Text>{r.uniqueName}</Text>
                 <Text>{r.username}</Text>
@@ -63,7 +59,9 @@ export default function ShowAllComponent(): JSX.Element {
                   <Text>View Password</Text>{thispass.id === r.uniqueName ? <Text>{thispass.value}</Text> : null}
                 </View>
             </View>
-        })}
+        }) : <View>
+          <Text>No items</Text>  
+        </View>}
       </View>
     );
 }

@@ -6,11 +6,11 @@ import {
   View,
   Text
 } from 'react-native';
-import { useServiceContext } from "./ServiceProvider";
+import { useServiceContext } from "../ServiceProvider";
 import RNFS from "react-native-fs";
-import { encryptPassword } from "./Encrypt";
+import { encryptPassword } from "../Encrypt";
 
-export default function PasswordComponent(): JSX.Element {
+export default function EncryptPasswordPage(): JSX.Element {
     const { data, fuse, dispatch } = useServiceContext();
     const [searchText, setSearch] = useState("");
     const [uniqueName, setUniqueName] = useState("");

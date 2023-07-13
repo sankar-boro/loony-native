@@ -4,12 +4,13 @@ import {
   Text,
   View
 } from 'react-native';
-import { useServiceContext } from './ServiceProvider';
+import { useServiceContext } from '../ServiceProvider';
 import AndIcon from 'react-native-vector-icons/AntDesign';
 import FontAIcon from 'react-native-vector-icons/FontAwesome';
 import EntIcon from 'react-native-vector-icons/Entypo';
+import { NAMES } from "../utils/Constants";
 
-export default function HomeScreen({navigation, route}: any): JSX.Element {
+export default function HomePage({navigation, route}: any): JSX.Element {
     
     const { password } = useServiceContext();
     const [log, setLog] = useState("");
@@ -17,45 +18,38 @@ export default function HomeScreen({navigation, route}: any): JSX.Element {
     useEffect(() => {
       setLog(JSON.stringify(password));
       if (password.load && !password.hasPassword) {
-        navigation.navigate('GenerateOneTimePassword', {name: ''})
+        navigation.navigate(NAMES.CREATE_APP_PASSWORD_PAGE, {name: ''})
       }
     }, [password.load])
 
     const renderCtxData = [
       {
         id: 1,
-        title: "ADD PASSWORD",
+        title: "ENCRYPT PASSWORD",
         iconName: <EntIcon name="lock" size={30} color="red" />,
         style: { color: "red", fontWeight: "bold" },
-        navigate: () => navigation.navigate('PasswordComponent', {name: ''})
+        navigate: () => navigation.navigate(NAMES.ENCRYPT_PASSWORD_PAGE, {name: ''})
       },
       {
         id: 2,
         style: { color: "green", fontWeight: "bold" },
         title: "ENCRYPT IMAGE",
         iconName: <FontAIcon name="photo" size={30} color="green" />,
-        navigate: () => navigation.navigate('ImageComponent', {name: ''})
+        navigate: () => navigation.navigate(NAMES.CAMERA_PAGE, {name: ''})
       },
       {
         id: 3,
         style: { color: "blue", fontWeight: "bold" },
-        title: "VIEW ALL",
+        title: "VIEW ENCRYPTED PASSWORDS",
         iconName: <AndIcon name="eye" size={30} color="blue" />,
-        navigate: () => navigation.navigate('ShowAllComponent', {name: ''})
+        navigate: () => navigation.navigate(NAMES.VIEW_ENCRYPTED_PASSWORDS_PAGE, {name: ''})
       },
       {
         id: 4,
         style: { color: "purple", fontWeight: "bold" },
-        title: "UPDATE PASSWORD",
+        title: "APP PERMISSIONS",
         iconName: <EntIcon name="lock" size={30} color="purple" />,
-        navigate: () => navigation.navigate('GenerateOneTimePassword', {name: ''})
-      },
-      {
-        id: 5,
-        style: { color: "purple", fontWeight: "bold" },
-        title: "PERMISSIONS",
-        iconName: <EntIcon name="lock" size={30} color="purple" />,
-        navigate: () => navigation.navigate('PermissionsPage', {name: ''})
+        navigate: () => navigation.navigate(NAMES.PERMISSIONS_PAGE, {name: ''})
       }
     ];
 

@@ -1,31 +1,17 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, View, Image, ActivityIndicator, PermissionsAndroid, Platform } from 'react-native';
 import Video, { LoadError, OnLoadData } from 'react-native-video';
-import { SAFE_AREA_PADDING } from './Constants';
-import { useIsForeground } from './hooks/useIsForeground';
+import { SAFE_AREA_PADDING } from '../utils/Constants';
+import { useIsForeground } from '../hooks/useIsForeground';
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { Alert } from 'react-native';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
-import { StatusBarBlurBackground } from './views/StatusBarBlurBackground';
+import { StatusBarBlurBackground } from '../views/StatusBarBlurBackground';
 import type { NativeSyntheticEvent } from 'react-native';
 import type { ImageLoadEventData } from 'react-native';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-// import type { Routes } from './Routes';
 import { useIsFocused } from '@react-navigation/core';
-
-const requestSavePermission = async (): Promise<boolean> => {
-  if (Platform.OS !== 'android') return true;
-
-  const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
-  if (permission == null) return false;
-  let hasPermission = await PermissionsAndroid.check(permission);
-  if (!hasPermission) {
-    const permissionRequestResult = await PermissionsAndroid.request(permission);
-    hasPermission = permissionRequestResult === 'granted';
-  }
-  return hasPermission;
-};
+import { requestSavePermission } from "../utils/permissions";
 
 const isVideoOnLoadEvent = (event: OnLoadData | NativeSyntheticEvent<ImageLoadEventData>): event is OnLoadData =>
   'duration' in event && 'naturalSize' in event;

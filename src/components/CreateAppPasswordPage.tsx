@@ -6,18 +6,18 @@ import {
   Button,
   Text
 } from 'react-native';
-import { useServiceContext } from "./ServiceProvider";
+import { useServiceContext } from "../ServiceProvider";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { APP_PASSWORD } from "./types";
-import { registerAppPassword } from "./Encrypt";
+import { APP_PASSWORD } from "../types";
+import { registerAppPassword } from "../Encrypt";
 import RNFS from "react-native-fs";
+import { NAMES } from '../utils/Constants';
 
-export default function GenerateOneTimePassword({navigation, route}: any): JSX.Element {
+export default function CreateAppPasswordPage({navigation, route}: any): JSX.Element {
     
     const { dispatch, password } = useServiceContext();
     const [pass, setPassword] = useState("");
     const [error, setError] = useState<any>("");
-    const [log, setLog] = useState("");
 
     const save = () => {
         registerAppPassword(pass.trim())
@@ -33,7 +33,7 @@ export default function GenerateOneTimePassword({navigation, route}: any): JSX.E
                             auth: false
                         }, []]
                     })
-                    navigation.navigate('Login', {name: ''})
+                    navigation.navigate(NAMES.LOGIN_PAGE, {name: ''})
                 })
                 .catch((err: any) => {
             
@@ -64,10 +64,6 @@ export default function GenerateOneTimePassword({navigation, route}: any): JSX.E
 
     return (
       <View style={styles.container}>
-        <View>
-            <Text>Log</Text>
-            <Text>{log}</Text>
-        </View>
         {error ? <Text>{error}</Text> : null }
         <TextInput 
         onChangeText={setPassword} 

@@ -4,12 +4,12 @@ import { ImageRequireSource, Linking } from 'react-native';
 
 import { StyleSheet, View, Text, Image } from 'react-native';
 import { Camera, CameraPermissionStatus } from 'react-native-vision-camera';
-import { CONTENT_SPACING, SAFE_AREA_PADDING } from './Constants';
+import { CONTENT_SPACING, NAMES, SAFE_AREA_PADDING } from '../utils/Constants';
 
 export default function PermissionsPage({ navigation }: any): React.ReactElement {
   const [cameraPermissionStatus, setCameraPermissionStatus] = useState<CameraPermissionStatus>('not-determined');
   const [microphonePermissionStatus, setMicrophonePermissionStatus] = useState<CameraPermissionStatus>('not-determined');
-
+  
   const requestMicrophonePermission = useCallback(async () => {
     console.log('Requesting microphone permission...');
     const permission = await Camera.requestMicrophonePermission();
@@ -29,7 +29,7 @@ export default function PermissionsPage({ navigation }: any): React.ReactElement
   }, []);
 
   useEffect(() => {
-    if (cameraPermissionStatus === 'authorized' && microphonePermissionStatus === 'authorized') navigation.replace('ImageComponent');
+    if (cameraPermissionStatus === 'authorized' && microphonePermissionStatus === 'authorized') navigation.replace(NAMES.CAMERA_PAGE);
   }, [cameraPermissionStatus, microphonePermissionStatus, navigation]);
 
   return (
