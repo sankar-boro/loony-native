@@ -43,13 +43,6 @@ export default function HomePage({navigation, route}: any): JSX.Element {
         title: "VIEW ENCRYPTED PASSWORDS",
         iconName: <AndIcon name="eye" size={30} color="blue" />,
         navigate: () => navigation.navigate(NAMES.VIEW_ENCRYPTED_PASSWORDS_PAGE, {name: ''})
-      },
-      {
-        id: 4,
-        style: { color: "purple", fontWeight: "bold" },
-        title: "APP PERMISSIONS",
-        iconName: <EntIcon name="lock" size={30} color="purple" />,
-        navigate: () => navigation.navigate(NAMES.PERMISSIONS_PAGE, {name: ''})
       }
     ];
 
