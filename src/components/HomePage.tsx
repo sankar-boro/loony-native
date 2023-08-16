@@ -1,14 +1,14 @@
-import React, {useEffect, useState} from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-native/no-inline-styles */
+import React, {useEffect} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {useServiceContext} from '../ServiceProvider';
 import {NAMES} from '../utils/Constants';
 
-export default function HomePage({navigation, route}: any): JSX.Element {
+export default function HomePage({navigation}: any): JSX.Element {
   const {password} = useServiceContext();
-  const [log, setLog] = useState('');
 
   useEffect(() => {
-    setLog(JSON.stringify(password));
     if (password.load && !password.hasPassword) {
       navigation.navigate(NAMES.CREATE_APP_PASSWORD_PAGE, {name: ''});
     }
@@ -18,19 +18,11 @@ export default function HomePage({navigation, route}: any): JSX.Element {
     {
       id: 1,
       title: 'ENCRYPT PASSWORD',
-      style: {color: 'red', fontWeight: 'bold'},
       navigate: () =>
         navigation.navigate(NAMES.ENCRYPT_PASSWORD_PAGE, {name: ''}),
     },
     {
-      id: 2,
-      style: {color: 'green', fontWeight: 'bold'},
-      title: 'ENCRYPT IMAGE',
-      navigate: () => navigation.navigate(NAMES.CAMERA_PAGE, {name: ''}),
-    },
-    {
       id: 3,
-      style: {color: 'blue', fontWeight: 'bold'},
       title: 'VIEW ENCRYPTED PASSWORDS',
       navigate: () =>
         navigation.navigate(NAMES.VIEW_ENCRYPTED_PASSWORDS_PAGE, {name: ''}),
@@ -39,10 +31,6 @@ export default function HomePage({navigation, route}: any): JSX.Element {
 
   return (
     <View style={styles.container}>
-      {/* <View>
-          <Text>Log</Text>
-          <Text>{log}</Text>
-        </View> */}
       <View
         style={{
           display: 'flex',
@@ -52,8 +40,7 @@ export default function HomePage({navigation, route}: any): JSX.Element {
         {renderCtxData.map((data: any) => {
           return (
             <View key={data.id} style={styles.card} onTouchEnd={data.navigate}>
-              <View style={{width: 50, marginLeft: 12}}>{data.iconName}</View>
-              <Text style={{...data.style}}>{data.title}</Text>
+              <Text style={styles.row}>{data.title}</Text>
             </View>
           );
         })}
@@ -65,6 +52,11 @@ export default function HomePage({navigation, route}: any): JSX.Element {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+  },
+  row: {
+    fontWeight: 'bold',
+    color: '#8d8d8d',
+    marginLeft: 10,
   },
   input: {
     height: 40,

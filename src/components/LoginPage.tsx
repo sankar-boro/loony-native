@@ -1,12 +1,15 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, TextInput, Button} from 'react-native';
+import {StyleSheet, View, TextInput, Text} from 'react-native';
 import {useServiceContext} from '../ServiceProvider';
 import {validatePassword} from '../Encrypt';
 import {NAMES} from '../utils/Constants';
+import {Button} from './Button';
 
 export default function LoginPage({navigation}: any): JSX.Element {
   const {password, dispatch} = useServiceContext();
   const [pass, setPass] = useState('');
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
 
   useEffect(() => {
     if (password.load && !password.hasPassword) {
@@ -34,20 +37,44 @@ export default function LoginPage({navigation}: any): JSX.Element {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        onChangeText={setPass}
-        value={pass}
-        placeholderTextColor="#cccccc"
-        style={styles.input}
-        placeholder="App Password"
-        secureTextEntry={true}
-      />
-      <Button
-        onPress={login}
-        title="Login"
-        color="#841584"
-        accessibilityLabel="Login"
-      />
+      <View>
+        <Text>Password</Text>
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
+          <View style={{width: '80%'}}>
+            <TextInput
+              onChangeText={setPass}
+              value={pass}
+              placeholderTextColor="#cccccc"
+              style={styles.input}
+              placeholder="App Password"
+              secureTextEntry={secureTextEntry}
+            />
+          </View>
+
+          <View style={{width: '18%'}}>
+            <Button
+              onPress={() => {
+                if (pass) {
+                  setSecureTextEntry(!secureTextEntry);
+                }
+              }}
+              title={secureTextEntry ? 'Show' : 'Hide'}
+              color="#6d6d6d"
+              accessibilityLabel="View"
+            />
+          </View>
+        </View>
+      </View>
+      {/* <View onTouchEnd={login} style={styles.button}>
+        <Text style={styles.buttonText}>Login</Text>
+      </View> */}
+      <Button onTouchEnd={login} styles={styles} />
     </View>
   );
 }
@@ -55,6 +82,18 @@ export default function LoginPage({navigation}: any): JSX.Element {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+  },
+  button: {
+    padding: 8,
+    backgroundColor: '#2d2d2d',
+    borderRadius: 3,
+    display: 'flex',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   input: {
     height: 40,

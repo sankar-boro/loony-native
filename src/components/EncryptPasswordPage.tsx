@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
-import {Button, StyleSheet, TextInput, View, Text} from 'react-native';
+import {StyleSheet, TextInput, View, Text} from 'react-native';
 import {useServiceContext} from '../ServiceProvider';
 import RNFS from 'react-native-fs';
 import {encryptPassword} from '../Encrypt';
+import {Button} from './Button';
 
 export default function EncryptPasswordPage(): JSX.Element {
   const {data, fuse, dispatch} = useServiceContext();
@@ -136,12 +137,7 @@ export default function EncryptPasswordPage(): JSX.Element {
         placeholder=""
         secureTextEntry={true}
       />
-      <Button
-        onPress={save}
-        title="Save"
-        color="#841584"
-        accessibilityLabel="Save"
-      />
+      <Button onTouchEnd={save} />
     </View>
   );
 }

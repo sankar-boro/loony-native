@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, Text, TextInput, Button} from 'react-native';
+import {StyleSheet, View, Text, TextInput} from 'react-native';
 import {useServiceContext} from '../ServiceProvider';
 import {decryptPassword, validatePassword} from '../Encrypt';
 import {RESULT} from '../v1/crypto';
+import {Button} from './Button';
 
 export default function ViewEncryptedPasswordsPage(): JSX.Element {
   const {data} = useServiceContext();
@@ -10,7 +11,7 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
   const [match, setMatch] = useState('FALSE');
   const [thispass, setThisPass] = useState({id: '', value: ''});
 
-  const matchPass = () => {
+  const verifyPassword = () => {
     validatePassword(pass)
       .then((_res: any) => {
         setMatch('TRUE');
@@ -20,23 +21,6 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
 
   return (
     <View style={styles.container}>
-      <View>
-        <TextInput
-          onChangeText={setPass}
-          value={pass}
-          placeholderTextColor="#cccccc"
-          style={styles.input}
-          placeholder="Enter App Password"
-          secureTextEntry={true}
-        />
-        <Button
-          onPress={matchPass}
-          title="Match"
-          color="#841584"
-          accessibilityLabel="Match"
-        />
-      </View>
-
       {match === 'TRUE' && data && data.length > 0 ? (
         data.map((r: any) => {
           return (
@@ -45,7 +29,7 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
               <Text>{r.username}</Text>
               <View>
                 <Text
-                  onTouchEnd={() => {
+                  onPress={() => {
                     decryptPassword(r.password)
                       .then((res: any) => {
                         if (res.status === RESULT.SUCCESS) {
@@ -60,7 +44,7 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
                   <View>
                     <Text>{thispass.value}</Text>
                     <Text
-                      onTouchEnd={() => {
+                      onPress={() => {
                         setThisPass({id: '', value: ''});
                       }}>
                       Close
@@ -73,9 +57,27 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
         })
       ) : (
         <View>
-          <Text>No items</Text>
+          <Text>Enter Master Password</Text>
+          <TextInput
+            onChangeText={setPass}
+            value={pass}
+            placeholderTextColor="#cccccc"
+            style={styles.input}
+            placeholder=""
+            secureTextEntry={true}
+          />
+          <Button
+            onTouchEnd={verifyPassword}
+            title="Verify Password"
+            accessibilityLabel="Verify Password"
+          />
         </View>
       )}
+      {match === 'TRUE' && data && data.length === 0 ? (
+        <View>
+          <Text>No items</Text>
+        </View>
+      ) : null}
     </View>
   );
 }

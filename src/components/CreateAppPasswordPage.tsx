@@ -72,14 +72,14 @@ export default function CreateAppPasswordPage({navigation}: any): JSX.Element {
       <Button
         onPress={save}
         title="Save"
-        color="#841584"
+        color="#8d8d8d"
         accessibilityLabel="Save"
       />
       <View style={styles.margin} />
       <Button
         onPress={resetPassword}
         title="Reset Password"
-        color="#841584"
+        color="#8d8d8d"
         accessibilityLabel="Reset Password"
       />
     </View>
