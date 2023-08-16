@@ -20,7 +20,7 @@ function Navigation(): JSX.Element {
           {({password}) => {
             if (password.auth === false) {
               return (
-                <Stack.Navigator>
+                <Stack.Navigator screenOptions={{headerShown: false}}>
                   <Stack.Screen
                     name={NAMES.LOGIN_PAGE}
                     component={LoginPage}

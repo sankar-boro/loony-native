@@ -58,15 +58,18 @@ export const registerAppPassword = (userPassword: string) => {
 };
 
 export const validatePassword = (userPassword: string) => {
-  let ciphertext = CryptoJS.AES.encrypt(userPassword, APP_PASSWORD).toString();
   return new Promise((resolve: any, reject: any) => {
     AsyncStorage.getItem(APP_PASSWORD)
       .then(ciphertextstorage => {
-        if (ciphertext !== ciphertextstorage) {
-          resolve({status: RESULT.NOT_MATCH, data: ''});
-        }
-        if (ciphertext === ciphertextstorage) {
-          resolve({status: RESULT.MATCH, data: ''});
+        if (ciphertextstorage) {
+          const bytes = CryptoJS.AES.decrypt(ciphertextstorage, APP_PASSWORD);
+          let decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+          if (decryptedData !== userPassword) {
+            resolve({status: RESULT.NOT_MATCH, data: 'Invalid password'});
+          }
+          if (decryptedData === userPassword) {
+            resolve({status: RESULT.MATCH, data: ''});
+          }
         }
       })
       .then(err => {

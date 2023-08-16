@@ -1,14 +1,15 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, TextInput, Text} from 'react-native';
+import {Text, StyleSheet, View, TextInput} from 'react-native';
 import {useServiceContext} from '../ServiceProvider';
 import {validatePassword} from '../Encrypt';
 import {NAMES} from '../utils/Constants';
-import {Button} from './Button';
+import {Button as AppButton} from './Button';
 
 export default function LoginPage({navigation}: any): JSX.Element {
   const {password, dispatch} = useServiceContext();
   const [pass, setPass] = useState('');
+  const [loginError, setLoginError] = useState('');
   const [secureTextEntry, setSecureTextEntry] = useState(true);
 
   useEffect(() => {
@@ -19,62 +20,75 @@ export default function LoginPage({navigation}: any): JSX.Element {
   }, [password.load, password.hasPassword]);
 
   const login = () => {
-    validatePassword(pass)
-      .then((_res: any) => {
-        dispatch({
-          keys: ['password'],
-          values: [
-            {
-              load: true,
-              hasPassword: true,
-              auth: true,
-            },
-          ],
+    if (pass) {
+      setLoginError('');
+      validatePassword(pass)
+        .then((res: any) => {
+          if (res.status === 'MATCH') {
+            dispatch({
+              keys: ['password'],
+              values: [
+                {
+                  load: true,
+                  hasPassword: true,
+                  auth: true,
+                },
+              ],
+            });
+          } else {
+            setLoginError(res.data);
+          }
+        })
+        .catch((err: any) => {
+          setLoginError(err.data);
         });
-      })
-      .catch((_err: any) => {});
+    } else {
+      setLoginError('Password cannot be empty.');
+    }
   };
 
   return (
     <View style={styles.container}>
       <View>
-        <Text>Password</Text>
+        {loginError ? (
+          <View>
+            <Text style={{color: 'red'}}>{loginError}</Text>
+          </View>
+        ) : null}
         <View
           style={{
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
+            borderBottomColor: '#ccc',
+            borderBottomWidth: 1,
+            marginBottom: 10,
           }}>
-          <View style={{width: '80%'}}>
+          <View style={{width: '85%'}}>
             <TextInput
               onChangeText={setPass}
               value={pass}
               placeholderTextColor="#cccccc"
               style={styles.input}
-              placeholder="App Password"
+              placeholder="Master password"
               secureTextEntry={secureTextEntry}
             />
           </View>
 
-          <View style={{width: '18%'}}>
-            <Button
+          <View style={{width: '15%'}}>
+            <Text
               onPress={() => {
                 if (pass) {
                   setSecureTextEntry(!secureTextEntry);
                 }
-              }}
-              title={secureTextEntry ? 'Show' : 'Hide'}
-              color="#6d6d6d"
-              accessibilityLabel="View"
-            />
+              }}>
+              {secureTextEntry ? 'Show' : 'Hide'}
+            </Text>
           </View>
         </View>
       </View>
-      {/* <View onTouchEnd={login} style={styles.button}>
-        <Text style={styles.buttonText}>Login</Text>
-      </View> */}
-      <Button onTouchEnd={login} styles={styles} />
+      <AppButton onTouchEnd={login} styles={styles} />
     </View>
   );
 }
@@ -82,6 +96,10 @@ export default function LoginPage({navigation}: any): JSX.Element {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+    height: '100%',
+    justifyContent: 'center',
+    display: 'flex',
+    backgroundColor: 'white',
   },
   button: {
     padding: 8,
@@ -93,14 +111,10 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 15,
   },
   input: {
     height: 40,
-    marginTop: 10,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#cccccc',
     borderRadius: 5,
     backgroundColor: 'white',
     padding: 10,

@@ -13,14 +13,14 @@ export const Button = ({onTouchEnd}: any) => {
 const styles = StyleSheet.create({
   button: {
     padding: 8,
-    backgroundColor: '#2d2d2d',
+    backgroundColor: '#ededed',
     borderRadius: 3,
     display: 'flex',
     alignItems: 'center',
   },
   buttonText: {
-    color: 'white',
+    color: 'black',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 18,
   },
 });

@@ -15,9 +15,7 @@ export default function EncryptPasswordPage(): JSX.Element {
   const [searchRes, setSearchRes] = useState([]);
 
   const savePassword = (res: any) => {
-    // console.log(res);
     let newData = [{username, password: res.data, uniqueName}];
-    console.log(newData);
     let newGroup: any = [...data, ...newData];
     fuse.add(newData);
     dispatch({
