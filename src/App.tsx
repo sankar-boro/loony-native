@@ -35,7 +35,7 @@ function Navigation(): JSX.Element {
               );
             } else {
               return (
-                <Stack.Navigator>
+                <Stack.Navigator screenOptions={{headerShown: false}}>
                   <Stack.Screen
                     name={NAMES.HOME_PAGE}
                     component={HomeScreen}

@@ -88,7 +88,7 @@ export default function LoginPage({navigation}: any): JSX.Element {
           </View>
         </View>
       </View>
-      <AppButton onTouchEnd={login} styles={styles} />
+      <AppButton onTouchEnd={login} styles={styles} text="Login" />
     </View>
   );
 }

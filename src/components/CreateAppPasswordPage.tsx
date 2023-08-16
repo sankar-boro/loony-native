@@ -90,6 +90,7 @@ const styles = StyleSheet.create({
   margin: {marginTop: 5, marginBottom: 5},
   container: {
     padding: 10,
+    backgroundColor: 'white',
   },
   input: {
     height: 40,

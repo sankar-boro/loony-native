@@ -13,8 +13,13 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
 
   const verifyPassword = () => {
     validatePassword(pass)
-      .then((_res: any) => {
-        setMatch('TRUE');
+      .then((res: any) => {
+        if (res.status === RESULT.MATCH) {
+          setMatch('TRUE');
+        }
+        if (res.status === RESULT.NOT_MATCH) {
+          setMatch('FALSE');
+        }
       })
       .catch((_err: any) => {});
   };
@@ -57,18 +62,17 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
         })
       ) : (
         <View>
-          <Text>Enter Master Password</Text>
           <TextInput
             onChangeText={setPass}
             value={pass}
             placeholderTextColor="#cccccc"
             style={styles.input}
-            placeholder=""
+            placeholder="Enter Master Password"
             secureTextEntry={true}
           />
           <Button
             onTouchEnd={verifyPassword}
-            title="Verify Password"
+            text="Verify Password"
             accessibilityLabel="Verify Password"
           />
         </View>
@@ -85,6 +89,8 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+    backgroundColor: 'white',
+    height: '100%',
   },
   cardContainer: {
     backgroundColor: 'white',
@@ -93,8 +99,8 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderWidth: 1,
-    borderColor: '#cccccc',
+    borderBottomColor: '#cccccc',
+    borderBottomWidth: 1,
     padding: 10,
     marginBottom: 10,
   },

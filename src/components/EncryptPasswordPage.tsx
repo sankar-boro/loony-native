@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
 import {StyleSheet, TextInput, View, Text} from 'react-native';
 import {useServiceContext} from '../ServiceProvider';
@@ -90,7 +91,7 @@ export default function EncryptPasswordPage(): JSX.Element {
           </View>
         </View>
 
-        <View>
+        <View style={styles.searchRes}>
           {searchRes.map((res: any, index: number) => {
             return (
               <View style={styles.searchCard} key={index}>
@@ -110,32 +111,29 @@ export default function EncryptPasswordPage(): JSX.Element {
         </View>
       </View>
 
-      <Text>Organization name/Institution name</Text>
       <TextInput
         onChangeText={setUniqueName}
         value={uniqueName}
         placeholderTextColor="#cccccc"
         style={styles.input}
-        placeholder=""
+        placeholder="Organization name/Institution name"
       />
-      <Text>Username</Text>
       <TextInput
         onChangeText={setUsername}
         value={username}
         placeholderTextColor="#cccccc"
         style={styles.input}
-        placeholder=""
+        placeholder="Username"
       />
-      <Text>Password</Text>
       <TextInput
         onChangeText={setPassword}
         value={password}
         placeholderTextColor="#cccccc"
         style={styles.input}
-        placeholder=""
+        placeholder="Password"
         secureTextEntry={true}
       />
-      <Button onTouchEnd={save} />
+      <Button onTouchEnd={save} text="Create" />
     </View>
   );
 }
@@ -143,6 +141,8 @@ export default function EncryptPasswordPage(): JSX.Element {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+    backgroundColor: 'white',
+    height: '100%',
   },
   searchContainer: {
     display: 'flex',
@@ -155,12 +155,16 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     paddingLeft: 15,
   },
+  searchRes: {
+    marginBottom: 20,
+  },
   input: {
     marginTop: 5,
     marginBottom: 5,
     height: 40,
     padding: 10,
-    borderWidth: 1,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
     borderRadius: 5,
     borderColor: '#cccccc',
   },
