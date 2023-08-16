@@ -1,10 +1,10 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
-import {Text, StyleSheet, View, TextInput} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {useServiceContext} from '../ServiceProvider';
 import {validatePassword} from '../Encrypt';
 import {NAMES} from '../utils/Constants';
-import {Button as AppButton} from './Button';
+// import {Button as AppButton} from './Button';
+import {TextInput, HelperText, Button, Chip } from 'react-native-paper';
 
 export default function LoginPage({navigation}: any): JSX.Element {
   const {password, dispatch} = useServiceContext();
@@ -50,45 +50,29 @@ export default function LoginPage({navigation}: any): JSX.Element {
   return (
     <View style={styles.container}>
       <View>
-        {loginError ? (
-          <View>
-            <Text style={{color: 'red'}}>{loginError}</Text>
-          </View>
-        ) : null}
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            borderBottomColor: '#ccc',
-            borderBottomWidth: 1,
-            marginBottom: 10,
-          }}>
-          <View style={{width: '85%'}}>
-            <TextInput
-              onChangeText={setPass}
-              value={pass}
-              placeholderTextColor="#cccccc"
-              style={styles.input}
-              placeholder="Master password"
-              secureTextEntry={secureTextEntry}
-            />
-          </View>
-
-          <View style={{width: '15%'}}>
-            <Text
+        <TextInput
+          mode="outlined"
+          onChangeText={setPass}
+          value={pass}
+          label="Master password"
+          secureTextEntry={secureTextEntry}
+          right={
+            <TextInput.Icon
+              icon="eye"
               onPress={() => {
-                if (pass) {
-                  setSecureTextEntry(!secureTextEntry);
-                }
-              }}>
-              {secureTextEntry ? 'Show' : 'Hide'}
-            </Text>
-          </View>
-        </View>
+                setSecureTextEntry(!secureTextEntry);
+              }}
+            />
+          }
+        />
+        <HelperText type="error" visible={loginError ? true : false}>
+          {loginError}
+        </HelperText>
       </View>
-      <AppButton onTouchEnd={login} styles={styles} text="Login" />
+      {/* <AppButton onTouchEnd={login} styles={styles} text="Login" /> */}
+      <Button icon="camera" mode="contained" onPress={login}>
+        Login
+      </Button>
     </View>
   );
 }
@@ -100,6 +84,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     display: 'flex',
     backgroundColor: 'white',
+  },
+  text: {
+    fontWeight: 'bold',
+    fontSize: 15,
+    lineHeight: 26,
   },
   button: {
     padding: 8,
