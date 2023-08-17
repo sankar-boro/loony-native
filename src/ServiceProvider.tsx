@@ -66,7 +66,9 @@ const useApp = (dispatch: any) => {
           values: [new Fuse(dj, options), dj],
         });
       })
-      .catch((_err: any) => {});
+      .catch((_err: any) => {
+        console.log('Error opening password.json file', _err);
+      });
   }, []);
 };
 

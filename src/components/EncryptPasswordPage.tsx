@@ -112,7 +112,7 @@ export default function EncryptPasswordPage(): JSX.Element {
             return (
               <View style={styles.searchCard} key={index}>
                 <Text style={styles.searchCardText}>{res.item.uniqueName}</Text>
-                <Text style={styles.searchCardText}>{res.item.username}</Text>
+                <Text style={styles.searchCardText}>{res.item.url}</Text>
               </View>
             );
           })}
@@ -220,6 +220,8 @@ const styles = StyleSheet.create({
   searchCard: {
     backgroundColor: 'white',
     padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
   searchCardText: {
     color: 'black',
