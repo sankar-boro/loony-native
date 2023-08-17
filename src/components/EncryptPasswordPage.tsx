@@ -6,6 +6,7 @@ import RNFS from 'react-native-fs';
 import {encryptPassword} from '../Encrypt';
 import {TextInput, Button} from 'react-native-paper';
 import {Searchbar} from 'react-native-paper';
+import uuid from 'react-native-uuid';
 
 export default function EncryptPasswordPage(): JSX.Element {
   const {data, fuse, dispatch} = useServiceContext();
@@ -13,13 +14,24 @@ export default function EncryptPasswordPage(): JSX.Element {
   const [uniqueName, setUniqueName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [keywords, setKeywords] = useState('');
+  const [url, setUrl] = useState('');
+
   const [error, setError] = useState<any>(null);
   const [searchRes, setSearchRes] = useState([]);
   const [secureTextEntry, setSecureTextEntry] = useState(true);
 
   const savePassword = (res: any) => {
+    const randomUuid = uuid.v4();
     let newData = [
-      {username, password: res.data, uniqueName: uniqueName.toLowerCase()},
+      {
+        id: randomUuid,
+        username,
+        password: res.data,
+        keywords: uniqueName.toLowerCase(),
+        url,
+        uniqueName,
+      },
     ];
     let newGroup: any = [...data, ...newData];
     fuse.add(newData);
@@ -35,6 +47,8 @@ export default function EncryptPasswordPage(): JSX.Element {
         setUniqueName('');
         setUsername('');
         setPassword('');
+        setUrl('');
+        setKeywords('');
       })
       .catch((err: any) => {
         setError({inputValues: null, writeFile: err, searchText: null});
@@ -132,6 +146,18 @@ export default function EncryptPasswordPage(): JSX.Element {
             }}
           />
         }
+      />
+      <TextInput
+        onChangeText={setKeywords}
+        value={keywords}
+        label="Keywords"
+        mode="outlined"
+      />
+      <TextInput
+        onChangeText={setUrl}
+        value={url}
+        label="Url"
+        mode="outlined"
       />
       <Button mode="contained" onPress={save} style={{marginTop: 10}}>
         Save

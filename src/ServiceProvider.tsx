@@ -26,7 +26,7 @@ export const setters = (state: any, action: any) => {
 
 const options = {
   includeScore: true,
-  keys: ['uniqueName', 'url'],
+  keys: ['uniqueName', 'keywords', 'url'],
 };
 
 const initData: any = {

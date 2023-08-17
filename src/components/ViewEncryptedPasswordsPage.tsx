@@ -6,14 +6,32 @@ import {decryptPassword, validatePassword} from '../Encrypt';
 import {RESULT} from '../v1/crypto';
 import {TextInput, Button, HelperText} from 'react-native-paper';
 import {Card, Text as PaperText} from 'react-native-paper';
+import RNFS from 'react-native-fs';
 
 export default function ViewEncryptedPasswordsPage(): JSX.Element {
-  const {data} = useServiceContext();
+  const {data, dispatch} = useServiceContext();
   const [pass, setPass] = useState('');
   const [viewState, setViewState] = useState('LOGIN');
   const [thispass, setThisPass] = useState({id: '', value: ''});
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [loginError, setLoginError] = useState('');
+  const [_error, setError] = useState<any>(null);
+
+  const removePassword = (sdata: any) => {
+    const newData = data.filter((item: any) => item.id !== sdata.id);
+    dispatch({
+      keys: ['data'],
+      values: [newData],
+    });
+    RNFS.writeFile(
+      `${RNFS.ExternalDirectoryPath}/password.json`,
+      JSON.stringify(newData),
+    )
+      .then(() => {})
+      .catch((err: any) => {
+        setError({inputValues: null, writeFile: err, searchText: null});
+      });
+  };
 
   const verifyPassword = () => {
     if (!pass) {
@@ -40,6 +58,11 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
 
   return (
     <View>
+      {viewState === 'NO_DATA' ? (
+        <View style={{...styles.centerContainer, alignItems: 'center'}}>
+          <Text>No items</Text>
+        </View>
+      ) : null}
       {viewState === 'LOGIN_FAILED' ? (
         <View style={{...styles.centerContainer, alignItems: 'center'}}>
           <Text>{loginError}</Text>
@@ -60,6 +83,7 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
                     <PaperText variant="titleLarge" style={{color: '#4287f5'}}>
                       {item.uniqueName}
                     </PaperText>
+                    <PaperText variant="bodyMedium">Url: {item.url}</PaperText>
                     <PaperText variant="bodyMedium">
                       Username: {item.username}
                     </PaperText>
@@ -76,31 +100,40 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
                           ? thispass.value
                           : '*****'}
                       </PaperText>
-                      <PaperText
-                        variant="bodyMedium"
-                        onPress={() => {
-                          if (thispass.id === item.uniqueName) {
-                            setThisPass({id: '', value: ''});
-                          } else {
-                            decryptPassword(item.password)
-                              .then((res: any) => {
-                                if (res.status === RESULT.SUCCESS) {
-                                  setThisPass({
-                                    id: item.uniqueName,
-                                    value: res.data,
-                                  });
-                                }
-                              })
-                              .catch(_err => {});
-                          }
-                        }}>
-                        {thispass.id === item.uniqueName ? 'Hide' : 'Show'}
-                      </PaperText>
+                      <View style={{display: 'flex', flexDirection: 'row'}}>
+                        <PaperText
+                          variant="bodyMedium"
+                          onPress={() => {
+                            if (thispass.id === item.uniqueName) {
+                              setThisPass({id: '', value: ''});
+                            } else {
+                              decryptPassword(item.password)
+                                .then((res: any) => {
+                                  if (res.status === RESULT.SUCCESS) {
+                                    setThisPass({
+                                      id: item.uniqueName,
+                                      value: res.data,
+                                    });
+                                  }
+                                })
+                                .catch(_err => {});
+                            }
+                          }}>
+                          {thispass.id === item.uniqueName ? 'Hide' : 'Show'}
+                        </PaperText>
+                        <Text
+                          style={{marginLeft: 10, color: 'red'}}
+                          onPress={() => {
+                            removePassword(item);
+                          }}>
+                          Delete
+                        </Text>
+                      </View>
                     </View>
                   </Card.Content>
                 </Card>
               )}
-              keyExtractor={(item: any) => item.uniqueName}
+              keyExtractor={(item: any) => item.id}
             />
             {/* {data.map((thisdata: any) => {
               return (
