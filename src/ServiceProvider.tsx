@@ -60,6 +60,7 @@ const useApp = (dispatch: any) => {
     RNFS.readFile(`${RNFS.ExternalDirectoryPath}/password.json`)
       .then((readFileRes: any) => {
         let dj = JSON.parse(readFileRes);
+        console.log(dj);
         dispatch({
           keys: ['fuse', 'data'],
           values: [new Fuse(dj, options), dj],

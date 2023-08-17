@@ -60,7 +60,7 @@ function Navigation(): JSX.Element {
                     <Stack.Screen
                       name={NAMES.VIEW_ENCRYPTED_PASSWORDS_PAGE}
                       component={ViewEncryptedPasswordsPage}
-                      options={{title: 'View All Password'}}
+                      options={{title: 'View All Password', headerShown: true}}
                     />
                   </Stack.Navigator>
                 );

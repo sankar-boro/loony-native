@@ -18,7 +18,9 @@ export default function EncryptPasswordPage(): JSX.Element {
   const [secureTextEntry, setSecureTextEntry] = useState(true);
 
   const savePassword = (res: any) => {
-    let newData = [{username, password: res.data, uniqueName}];
+    let newData = [
+      {username, password: res.data, uniqueName: uniqueName.toLowerCase()},
+    ];
     let newGroup: any = [...data, ...newData];
     fuse.add(newData);
     dispatch({
@@ -64,6 +66,7 @@ export default function EncryptPasswordPage(): JSX.Element {
         searchText: 'Search input cannot be empty!',
       });
     } else {
+      console.log('searchText', searchText);
       const res = fuse.search(searchText);
       setSearchRes(res);
     }
@@ -85,6 +88,9 @@ export default function EncryptPasswordPage(): JSX.Element {
           onChangeText={setSearch}
           value={searchText}
           onIconPress={search}
+          onClearIconPress={() => {
+            setSearchRes([]);
+          }}
         />
 
         <View style={styles.searchRes}>
@@ -96,14 +102,6 @@ export default function EncryptPasswordPage(): JSX.Element {
               </View>
             );
           })}
-          {searchRes.length > 0 ? (
-            <View
-              onTouchEnd={() => {
-                setSearchRes([]);
-              }}>
-              <Text>Close</Text>
-            </View>
-          ) : null}
         </View>
       </View>
 
@@ -116,7 +114,7 @@ export default function EncryptPasswordPage(): JSX.Element {
       <TextInput
         onChangeText={setUsername}
         value={username}
-        placeholder="Username"
+        label="Username"
         mode="outlined"
       />
       <TextInput

@@ -44,7 +44,7 @@ export default function HomePage({navigation}: any): JSX.Element {
           return (
             <Card
               key={data.id}
-              style={{marginBottom: 5, width: '100%'}}
+              style={{marginBottom: 15, width: '100%'}}
               onTouchEnd={data.navigate}>
               <Card.Content>
                 <PaperText variant="titleLarge" style={{color: '#4287f5'}}>
@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
     height: '100%',
     display: 'flex',
     justifyContent: 'center',
+    backgroundColor: 'white',
   },
   row: {
     fontWeight: 'bold',
