@@ -80,7 +80,6 @@ export default function EncryptPasswordPage(): JSX.Element {
         searchText: 'Search input cannot be empty!',
       });
     } else {
-      console.log('searchText', searchText);
       const res = fuse.search(searchText);
       setSearchRes(res);
     }
@@ -105,6 +104,7 @@ export default function EncryptPasswordPage(): JSX.Element {
           onClearIconPress={() => {
             setSearchRes([]);
           }}
+          onSubmitEditing={search}
         />
 
         <View style={styles.searchRes}>
