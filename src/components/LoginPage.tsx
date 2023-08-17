@@ -3,8 +3,7 @@ import {StyleSheet, View} from 'react-native';
 import {useServiceContext} from '../ServiceProvider';
 import {validatePassword} from '../Encrypt';
 import {NAMES} from '../utils/Constants';
-// import {Button as AppButton} from './Button';
-import {TextInput, HelperText, Button, Chip } from 'react-native-paper';
+import {TextInput, HelperText, Button} from 'react-native-paper';
 
 export default function LoginPage({navigation}: any): JSX.Element {
   const {password, dispatch} = useServiceContext();
@@ -52,13 +51,19 @@ export default function LoginPage({navigation}: any): JSX.Element {
       <View>
         <TextInput
           mode="outlined"
-          onChangeText={setPass}
+          onChangeText={(v: string) => {
+            if (pass) {
+              setLoginError('');
+            }
+            setPass(v);
+          }}
           value={pass}
           label="Master password"
           secureTextEntry={secureTextEntry}
           right={
             <TextInput.Icon
               icon="eye"
+              color="#4287f5"
               onPress={() => {
                 setSecureTextEntry(!secureTextEntry);
               }}
@@ -69,8 +74,7 @@ export default function LoginPage({navigation}: any): JSX.Element {
           {loginError}
         </HelperText>
       </View>
-      {/* <AppButton onTouchEnd={login} styles={styles} text="Login" /> */}
-      <Button icon="camera" mode="contained" onPress={login}>
+      <Button mode="contained" onPress={login}>
         Login
       </Button>
     </View>

@@ -1,43 +1,51 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
-import {StyleSheet, View, TextInput, Button, Text} from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 import {useServiceContext} from '../ServiceProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {APP_PASSWORD} from '../types';
 import {registerAppPassword} from '../Encrypt';
 import RNFS from 'react-native-fs';
 import {NAMES} from '../utils/Constants';
+import {TextInput, Button, HelperText} from 'react-native-paper';
 
 export default function CreateAppPasswordPage({navigation}: any): JSX.Element {
   const {dispatch} = useServiceContext();
   const [pass, setPassword] = useState('');
   const [error, setError] = useState<any>('');
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
+  const [signupError, setSignupError] = useState('');
 
   const save = () => {
-    registerAppPassword(pass.trim())
-      .then((res: any) => {
-        if (res.status === 'SUCCESS') {
-          RNFS.writeFile(
-            `${RNFS.ExternalDirectoryPath}/password.json`,
-            JSON.stringify([]),
-          ).then(() => {
-            dispatch({
-              keys: ['password', 'data'],
-              values: [
-                {
-                  load: true,
-                  hasPassword: true,
-                  auth: false,
-                },
-                [],
-              ],
+    if (!pass) {
+      setSignupError('Password cannot be empty.');
+    } else {
+      registerAppPassword(pass.trim())
+        .then((res: any) => {
+          if (res.status === 'SUCCESS') {
+            RNFS.writeFile(
+              `${RNFS.ExternalDirectoryPath}/password.json`,
+              JSON.stringify([]),
+            ).then(() => {
+              dispatch({
+                keys: ['password', 'data'],
+                values: [
+                  {
+                    load: true,
+                    hasPassword: true,
+                    auth: false,
+                  },
+                  [],
+                ],
+              });
+              navigation.navigate(NAMES.LOGIN_PAGE, {name: ''});
             });
-            navigation.navigate(NAMES.LOGIN_PAGE, {name: ''});
-          });
-        }
-      })
-      .catch((err: any) => {
-        setError(JSON.stringify(err));
-      });
+          }
+        })
+        .catch((err: any) => {
+          setError(JSON.stringify(err));
+        });
+    }
   };
 
   const resetPassword = () => {
@@ -63,25 +71,35 @@ export default function CreateAppPasswordPage({navigation}: any): JSX.Element {
     <View style={styles.container}>
       {error ? <Text>{error}</Text> : null}
       <TextInput
-        onChangeText={setPassword}
+        mode="outlined"
+        onChangeText={(v: string) => {
+          if (pass) {
+            setSignupError('');
+          }
+          setPassword(v);
+        }}
         value={pass}
-        placeholderTextColor="#cccccc"
-        style={styles.input}
-        placeholder="Create new password"
+        label="Create new password"
+        secureTextEntry={secureTextEntry}
+        right={
+          <TextInput.Icon
+            icon="eye"
+            color="#4287f5"
+            onPress={() => {
+              setSecureTextEntry(!secureTextEntry);
+            }}
+          />
+        }
       />
-      <Button
-        onPress={save}
-        title="Save"
-        color="#8d8d8d"
-        accessibilityLabel="Save"
-      />
-      <View style={styles.margin} />
-      <Button
-        onPress={resetPassword}
-        title="Reset Password"
-        color="#8d8d8d"
-        accessibilityLabel="Reset Password"
-      />
+      <HelperText type="error" visible={signupError ? true : false}>
+        {signupError}
+      </HelperText>
+      <Button mode="contained" style={{marginTop: 10}} onPress={save}>
+        Save
+      </Button>
+      <Button mode="contained" style={{marginTop: 10}} onPress={resetPassword}>
+        Reset Password
+      </Button>
     </View>
   );
 }

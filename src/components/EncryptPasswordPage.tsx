@@ -1,10 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
-import {StyleSheet, TextInput, View, Text} from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 import {useServiceContext} from '../ServiceProvider';
 import RNFS from 'react-native-fs';
 import {encryptPassword} from '../Encrypt';
-import {Button} from './Button';
+import {TextInput, Button} from 'react-native-paper';
 
 export default function EncryptPasswordPage(): JSX.Element {
   const {data, fuse, dispatch} = useServiceContext();
@@ -14,6 +14,7 @@ export default function EncryptPasswordPage(): JSX.Element {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<any>(null);
   const [searchRes, setSearchRes] = useState([]);
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
 
   const savePassword = (res: any) => {
     let newData = [{username, password: res.data, uniqueName}];
@@ -82,13 +83,12 @@ export default function EncryptPasswordPage(): JSX.Element {
           <TextInput
             onChangeText={setSearch}
             value={searchText}
-            placeholderTextColor="#cccccc"
-            style={{...styles.input, ...styles.searchInput}}
-            placeholder="Search and edit"
+            mode="outlined"
+            label="Search and edit"
+            right={
+              <TextInput.Icon icon="eye" color="#4287f5" onPress={search} />
+            }
           />
-          <View style={styles.button} onTouchEnd={search}>
-            <Text style={styles.buttonTxt}>Search</Text>
-          </View>
         </View>
 
         <View style={styles.searchRes}>
@@ -112,28 +112,36 @@ export default function EncryptPasswordPage(): JSX.Element {
       </View>
 
       <TextInput
+        mode="outlined"
         onChangeText={setUniqueName}
         value={uniqueName}
-        placeholderTextColor="#cccccc"
-        style={styles.input}
-        placeholder="Organization name/Institution name"
+        label="Organization name/Institution name"
       />
       <TextInput
         onChangeText={setUsername}
         value={username}
-        placeholderTextColor="#cccccc"
-        style={styles.input}
         placeholder="Username"
+        mode="outlined"
       />
       <TextInput
         onChangeText={setPassword}
         value={password}
-        placeholderTextColor="#cccccc"
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry={true}
+        secureTextEntry={secureTextEntry}
+        mode="outlined"
+        label="Password"
+        right={
+          <TextInput.Icon
+            icon="eye"
+            color="#4287f5"
+            onPress={() => {
+              setSecureTextEntry(!secureTextEntry);
+            }}
+          />
+        }
       />
-      <Button onTouchEnd={save} text="Create" />
+      <Button mode="contained" onPress={save} style={{marginTop: 10}}>
+        Save
+      </Button>
     </View>
   );
 }
@@ -145,10 +153,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   searchContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    width: '100%',
   },
   searchInput: {
     width: '75%',

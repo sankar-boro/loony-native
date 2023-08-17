@@ -1,9 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {useServiceContext} from '../ServiceProvider';
 import {NAMES} from '../utils/Constants';
+import {Card, Text as PaperText} from 'react-native-paper';
 
 export default function HomePage({navigation}: any): JSX.Element {
   const {password} = useServiceContext();
@@ -17,13 +18,15 @@ export default function HomePage({navigation}: any): JSX.Element {
   const renderCtxData = [
     {
       id: 1,
-      title: 'ENCRYPT PASSWORD',
+      title: 'ADD PASSWORD',
+      body: 'Add new Institution/Organization/Company login info.',
       navigate: () =>
         navigation.navigate(NAMES.ENCRYPT_PASSWORD_PAGE, {name: ''}),
     },
     {
       id: 3,
-      title: 'VIEW ENCRYPTED PASSWORDS',
+      title: 'SAVED PASSWORDS',
+      body: 'View saved Encrypted informations.',
       navigate: () =>
         navigation.navigate(NAMES.VIEW_ENCRYPTED_PASSWORDS_PAGE, {name: ''}),
     },
@@ -39,9 +42,17 @@ export default function HomePage({navigation}: any): JSX.Element {
         }}>
         {renderCtxData.map((data: any) => {
           return (
-            <View key={data.id} style={styles.card} onTouchEnd={data.navigate}>
-              <Text style={styles.row}>{data.title}</Text>
-            </View>
+            <Card
+              key={data.id}
+              style={{marginBottom: 5}}
+              onTouchEnd={data.navigate}>
+              <Card.Content>
+                <PaperText variant="titleLarge" style={{color: '#4287f5'}}>
+                  {data.title}
+                </PaperText>
+                <PaperText variant="bodyMedium">{data.body}</PaperText>
+              </Card.Content>
+            </Card>
           );
         })}
       </View>

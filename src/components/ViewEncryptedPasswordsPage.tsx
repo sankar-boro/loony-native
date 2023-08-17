@@ -1,9 +1,10 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
-import {StyleSheet, View, Text, TextInput} from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 import {useServiceContext} from '../ServiceProvider';
 import {decryptPassword, validatePassword} from '../Encrypt';
 import {RESULT} from '../v1/crypto';
-import {Button} from './Button';
+import {TextInput, Button} from 'react-native-paper';
 
 export default function ViewEncryptedPasswordsPage(): JSX.Element {
   const {data} = useServiceContext();
@@ -63,18 +64,17 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
       ) : (
         <View>
           <TextInput
+            mode="outlined"
             onChangeText={setPass}
             value={pass}
-            placeholderTextColor="#cccccc"
-            style={styles.input}
-            placeholder="Enter Master Password"
-            secureTextEntry={true}
+            label="Enter Master password"
           />
           <Button
-            onTouchEnd={verifyPassword}
-            text="Verify Password"
-            accessibilityLabel="Verify Password"
-          />
+            mode="contained"
+            style={{marginTop: 10}}
+            onPress={verifyPassword}>
+            Verify Password
+          </Button>
         </View>
       )}
       {match === 'TRUE' && data && data.length === 0 ? (
