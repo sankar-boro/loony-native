@@ -1,10 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View, Text, FlatList} from 'react-native';
 import {useServiceContext} from '../ServiceProvider';
 import {decryptPassword, validatePassword} from '../Encrypt';
 import {RESULT} from '../v1/crypto';
 import {TextInput, Button, HelperText} from 'react-native-paper';
+import {Card, Text as PaperText} from 'react-native-paper';
 
 export default function ViewEncryptedPasswordsPage(): JSX.Element {
   const {data} = useServiceContext();
@@ -47,39 +48,111 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
       {viewState === 'CONTAINS_DATA' ? (
         <View style={styles.container}>
           <View>
-            {data.map((r: any) => {
-              return (
-                <View key={r.uniqueName} style={styles.cardContainer}>
-                  <Text>{r.uniqueName}</Text>
-                  <Text>{r.username}</Text>
-                  <View>
-                    <Text
-                      onPress={() => {
-                        decryptPassword(r.password)
-                          .then((res: any) => {
-                            if (res.status === RESULT.SUCCESS) {
-                              setThisPass({id: r.uniqueName, value: res.data});
-                            }
-                          })
-                          .catch(_err => {});
+            <FlatList
+              data={data}
+              showsVerticalScrollIndicator={false}
+              renderItem={({item}: any) => (
+                <Card
+                  key={item.uniqueName}
+                  style={{marginBottom: 15, width: '100%'}}
+                  onTouchEnd={item.navigate}>
+                  <Card.Content>
+                    <PaperText variant="titleLarge" style={{color: '#4287f5'}}>
+                      {item.uniqueName}
+                    </PaperText>
+                    <PaperText variant="bodyMedium">
+                      Username: {item.username}
+                    </PaperText>
+                    <View
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        paddingTop: 10,
+                        paddingBottom: 10,
                       }}>
-                      View Password
-                    </Text>
-                    {thispass.id === r.uniqueName ? (
-                      <View>
-                        <Text>{thispass.value}</Text>
-                        <Text
-                          onPress={() => {
+                      <PaperText variant="bodyMedium">
+                        {thispass.id === item.uniqueName
+                          ? thispass.value
+                          : '*****'}
+                      </PaperText>
+                      <PaperText
+                        variant="bodyMedium"
+                        onPress={() => {
+                          if (thispass.id === item.uniqueName) {
                             setThisPass({id: '', value: ''});
-                          }}>
-                          Close
-                        </Text>
-                      </View>
-                    ) : null}
-                  </View>
-                </View>
+                          } else {
+                            decryptPassword(item.password)
+                              .then((res: any) => {
+                                if (res.status === RESULT.SUCCESS) {
+                                  setThisPass({
+                                    id: item.uniqueName,
+                                    value: res.data,
+                                  });
+                                }
+                              })
+                              .catch(_err => {});
+                          }
+                        }}>
+                        {thispass.id === item.uniqueName ? 'Hide' : 'Show'}
+                      </PaperText>
+                    </View>
+                  </Card.Content>
+                </Card>
+              )}
+              keyExtractor={(item: any) => item.uniqueName}
+            />
+            {/* {data.map((thisdata: any) => {
+              return (
+                <Card
+                  key={thisdata.uniqueName}
+                  style={{marginBottom: 15, width: '100%'}}
+                  onTouchEnd={thisdata.navigate}>
+                  <Card.Content>
+                    <PaperText variant="titleLarge" style={{color: '#4287f5'}}>
+                      {thisdata.uniqueName}
+                    </PaperText>
+                    <PaperText variant="bodyMedium">
+                      Username: {thisdata.username}
+                    </PaperText>
+                    <View
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        paddingTop: 10,
+                        paddingBottom: 10,
+                      }}>
+                      <PaperText variant="bodyMedium">
+                        {thispass.id === thisdata.uniqueName
+                          ? thispass.value
+                          : '*****'}
+                      </PaperText>
+                      <PaperText
+                        variant="bodyMedium"
+                        onPress={() => {
+                          if (thispass.id === thisdata.uniqueName) {
+                            setThisPass({id: '', value: ''});
+                          } else {
+                            decryptPassword(thisdata.password)
+                              .then((res: any) => {
+                                if (res.status === RESULT.SUCCESS) {
+                                  setThisPass({
+                                    id: thisdata.uniqueName,
+                                    value: res.data,
+                                  });
+                                }
+                              })
+                              .catch(_err => {});
+                          }
+                        }}>
+                        {thispass.id === thisdata.uniqueName ? 'Hide' : 'Show'}
+                      </PaperText>
+                    </View>
+                  </Card.Content>
+                </Card>
               );
-            })}
+            })} */}
           </View>
         </View>
       ) : null}
@@ -155,5 +228,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  listText: {
+    fontSize: 18,
   },
 });
