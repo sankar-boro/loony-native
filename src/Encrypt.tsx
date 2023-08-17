@@ -52,7 +52,7 @@ export const registerAppPassword = (userPassword: string) => {
       APP_PASSWORD,
     ).toString();
     AsyncStorage.setItem(APP_PASSWORD, ciphertext).then(() => {
-      resolve({status: RESULT.MATCH, data: ciphertext});
+      resolve({status: RESULT.SUCCESS, data: ciphertext});
     });
   });
 };

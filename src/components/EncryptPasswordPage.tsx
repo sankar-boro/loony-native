@@ -5,6 +5,7 @@ import {useServiceContext} from '../ServiceProvider';
 import RNFS from 'react-native-fs';
 import {encryptPassword} from '../Encrypt';
 import {TextInput, Button} from 'react-native-paper';
+import {Searchbar} from 'react-native-paper';
 
 export default function EncryptPasswordPage(): JSX.Element {
   const {data, fuse, dispatch} = useServiceContext();
@@ -79,17 +80,12 @@ export default function EncryptPasswordPage(): JSX.Element {
       ) : null}
 
       <View>
-        <View style={styles.searchContainer}>
-          <TextInput
-            onChangeText={setSearch}
-            value={searchText}
-            mode="outlined"
-            label="Search and edit"
-            right={
-              <TextInput.Icon icon="eye" color="#4287f5" onPress={search} />
-            }
-          />
-        </View>
+        <Searchbar
+          placeholder="Search"
+          onChangeText={setSearch}
+          value={searchText}
+          onIconPress={search}
+        />
 
         <View style={styles.searchRes}>
           {searchRes.map((res: any, index: number) => {

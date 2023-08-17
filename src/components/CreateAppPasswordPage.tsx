@@ -8,6 +8,7 @@ import {registerAppPassword} from '../Encrypt';
 import RNFS from 'react-native-fs';
 import {NAMES} from '../utils/Constants';
 import {TextInput, Button, HelperText} from 'react-native-paper';
+import {RESULT} from '../v1/crypto';
 
 export default function CreateAppPasswordPage({navigation}: any): JSX.Element {
   const {dispatch} = useServiceContext();
@@ -22,7 +23,7 @@ export default function CreateAppPasswordPage({navigation}: any): JSX.Element {
     } else {
       registerAppPassword(pass.trim())
         .then((res: any) => {
-          if (res.status === 'SUCCESS') {
+          if (res.status === RESULT.SUCCESS) {
             RNFS.writeFile(
               `${RNFS.ExternalDirectoryPath}/password.json`,
               JSON.stringify([]),
@@ -91,9 +92,11 @@ export default function CreateAppPasswordPage({navigation}: any): JSX.Element {
           />
         }
       />
-      <HelperText type="error" visible={signupError ? true : false}>
-        {signupError}
-      </HelperText>
+      {signupError ? (
+        <HelperText type="error" visible={true}>
+          {signupError}
+        </HelperText>
+      ) : null}
       <Button mode="contained" style={{marginTop: 10}} onPress={save}>
         Save
       </Button>
@@ -109,6 +112,9 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     backgroundColor: 'white',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
   },
   input: {
     height: 40,

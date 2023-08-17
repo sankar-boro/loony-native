@@ -4,25 +4,34 @@ import {StyleSheet, View, Text} from 'react-native';
 import {useServiceContext} from '../ServiceProvider';
 import {decryptPassword, validatePassword} from '../Encrypt';
 import {RESULT} from '../v1/crypto';
-import {TextInput, Button} from 'react-native-paper';
+import {TextInput, Button, HelperText} from 'react-native-paper';
 
 export default function ViewEncryptedPasswordsPage(): JSX.Element {
   const {data} = useServiceContext();
   const [pass, setPass] = useState('');
   const [match, setMatch] = useState('FALSE');
   const [thispass, setThisPass] = useState({id: '', value: ''});
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
+  const [loginError, setLoginError] = useState('');
 
   const verifyPassword = () => {
-    validatePassword(pass)
-      .then((res: any) => {
-        if (res.status === RESULT.MATCH) {
-          setMatch('TRUE');
-        }
-        if (res.status === RESULT.NOT_MATCH) {
-          setMatch('FALSE');
-        }
-      })
-      .catch((_err: any) => {});
+    if (!pass) {
+      setLoginError('Password cannot be empty.');
+    } else {
+      validatePassword(pass)
+        .then((res: any) => {
+          if (res.status === RESULT.MATCH) {
+            setMatch('TRUE');
+          }
+          if (res.status === RESULT.NOT_MATCH) {
+            setMatch('FALSE');
+            setLoginError(res.data);
+          }
+        })
+        .catch((err: any) => {
+          setLoginError(err.data);
+        });
+    }
   };
 
   return (
@@ -62,13 +71,34 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
           );
         })
       ) : (
-        <View>
+        <View
+          style={{display: 'flex', height: '100%', justifyContent: 'center'}}>
           <TextInput
             mode="outlined"
-            onChangeText={setPass}
+            onChangeText={(v: string) => {
+              if (pass) {
+                setLoginError('');
+              }
+              setPass(v);
+            }}
             value={pass}
             label="Enter Master password"
+            secureTextEntry={secureTextEntry}
+            right={
+              <TextInput.Icon
+                icon="eye"
+                color="#4287f5"
+                onPress={() => {
+                  setSecureTextEntry(!secureTextEntry);
+                }}
+              />
+            }
           />
+          {loginError ? (
+            <HelperText type="error" visible={true}>
+              {loginError}
+            </HelperText>
+          ) : null}
           <Button
             mode="contained"
             style={{marginTop: 10}}
