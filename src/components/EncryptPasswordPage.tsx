@@ -12,7 +12,7 @@ export default function EncryptPasswordPage(): JSX.Element {
   const {data, fuse, dispatch} = useServiceContext();
   const [searchText, setSearch] = useState('');
   const [uniqueName, setUniqueName] = useState('');
-  const [username, setUsername] = useState('');
+  const [userName, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [keywords, setKeywords] = useState('');
   const [url, setUrl] = useState('');
@@ -26,7 +26,7 @@ export default function EncryptPasswordPage(): JSX.Element {
     let newData = [
       {
         id: randomUuid,
-        username,
+        userName,
         password: res.data,
         keywords: uniqueName.toLowerCase(),
         url,
@@ -56,10 +56,10 @@ export default function EncryptPasswordPage(): JSX.Element {
   };
 
   const save = () => {
-    if (!uniqueName || !username || !password) {
+    if (!uniqueName || !userName || !password) {
       setError({
         inputValues:
-          'Cannot have empty field values for username, password or url.',
+          'Cannot have empty field values for userName, password or url.',
         writeFile: null,
         searchText: null,
       });
@@ -127,7 +127,7 @@ export default function EncryptPasswordPage(): JSX.Element {
       />
       <TextInput
         onChangeText={setUsername}
-        value={username}
+        value={userName}
         label="Username"
         mode="outlined"
       />

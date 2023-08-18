@@ -8,6 +8,7 @@ import {AppContext, ServiceProvider} from './ServiceProvider';
 import ViewEncryptedPasswordsPage from './components/ViewEncryptedPasswordsPage';
 import AppPassword from './components/CreateAppPasswordPage';
 import LoginPage from './components/LoginPage';
+import UpdatePasswordPage from './components/UpdatePasswordPage';
 import {NAMES} from './utils/Constants';
 import {PaperProvider} from 'react-native-paper';
 import {MD3LightTheme as DefaultTheme} from 'react-native-paper';
@@ -61,6 +62,11 @@ function Navigation(): JSX.Element {
                       name={NAMES.VIEW_ENCRYPTED_PASSWORDS_PAGE}
                       component={ViewEncryptedPasswordsPage}
                       options={{title: 'View All Password', headerShown: true}}
+                    />
+                    <Stack.Screen
+                      name={NAMES.UPDATE_PASSWORDS_PAGE}
+                      component={UpdatePasswordPage}
+                      options={{title: 'Update Password', headerShown: true}}
                     />
                   </Stack.Navigator>
                 );

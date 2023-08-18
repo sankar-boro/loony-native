@@ -7,4 +7,5 @@ export enum NAMES {
   MEDIA_PAGE = 'MediaPage',
   PERMISSIONS_PAGE = 'PermissionsPage',
   VIEW_ENCRYPTED_PASSWORDS_PAGE = 'ViewEncryptedPasswordsPage',
+  UPDATE_PASSWORDS_PAGE = 'UpdatePasswordsPage',
 }

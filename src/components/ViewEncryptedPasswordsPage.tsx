@@ -1,14 +1,17 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
-import {StyleSheet, View, Text, FlatList} from 'react-native';
+import {StyleSheet, View, Text, FlatList, Alert} from 'react-native';
 import {useServiceContext} from '../ServiceProvider';
 import {decryptPassword, validatePassword} from '../Encrypt';
 import {RESULT} from '../v1/crypto';
 import {TextInput, Button, HelperText} from 'react-native-paper';
 import {Card, Text as PaperText} from 'react-native-paper';
 import RNFS from 'react-native-fs';
+import {NAMES} from '../utils/Constants';
 
-export default function ViewEncryptedPasswordsPage(): JSX.Element {
+export default function ViewEncryptedPasswordsPage({
+  navigation,
+}: any): JSX.Element {
   const {data, dispatch} = useServiceContext();
   const [pass, setPass] = useState('');
   const [viewState, setViewState] = useState('LOGIN');
@@ -17,8 +20,8 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
   const [loginError, setLoginError] = useState('');
   const [_error, setError] = useState<any>(null);
 
-  const removePassword = (sdata: any) => {
-    const newData = data.filter((item: any) => item.id !== sdata.id);
+  const deletePassword = (deleteItem: any) => {
+    const newData = data.filter((item: any) => item.id !== deleteItem.id);
     dispatch({
       keys: ['data'],
       values: [newData],
@@ -31,6 +34,26 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
       .catch((err: any) => {
         setError({inputValues: null, writeFile: err, searchText: null});
       });
+  };
+
+  const removePassword = (deleteItem: any) => {
+    Alert.alert(
+      'Delete',
+      `Are you sure you want to delete:\nUsername: ${deleteItem.userName}\nUnique Name: ${deleteItem.uniqueName}\nUrl: ${deleteItem.url}`,
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {},
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            deletePassword(deleteItem);
+          },
+        },
+      ],
+    );
   };
 
   const verifyPassword = () => {
@@ -85,7 +108,7 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
                     </PaperText>
                     <PaperText variant="bodyMedium">Url: {item.url}</PaperText>
                     <PaperText variant="bodyMedium">
-                      Username: {item.username}
+                      Username: {item.userName}
                     </PaperText>
                     <View
                       style={{
@@ -121,6 +144,17 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
                           }}>
                           {thispass.id === item.uniqueName ? 'Hide' : 'Show'}
                         </PaperText>
+                        <PaperText
+                          style={{marginLeft: 10}}
+                          variant="bodyMedium"
+                          onPress={() => {
+                            navigation.navigate(
+                              NAMES.UPDATE_PASSWORDS_PAGE,
+                              item,
+                            );
+                          }}>
+                          Update
+                        </PaperText>
                         <Text
                           style={{marginLeft: 10, color: 'red'}}
                           onPress={() => {
@@ -146,7 +180,7 @@ export default function ViewEncryptedPasswordsPage(): JSX.Element {
                       {thisdata.uniqueName}
                     </PaperText>
                     <PaperText variant="bodyMedium">
-                      Username: {thisdata.username}
+                      Username: {thisdata.userName}
                     </PaperText>
                     <View
                       style={{
