@@ -2,8 +2,6 @@
 import React, {useState} from 'react';
 import {StyleSheet, View, Text} from 'react-native';
 import {useServiceContext} from '../ServiceProvider';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {APP_PASSWORD} from '../types';
 import {registerAppPassword} from '../Encrypt';
 import RNFS from 'react-native-fs';
 import {NAMES} from '../utils/Constants';
@@ -13,7 +11,6 @@ import {RESULT} from '../v1/crypto';
 export default function CreateAppPasswordPage({navigation}: any): JSX.Element {
   const {dispatch} = useServiceContext();
   const [pass, setPassword] = useState('');
-  const [error, setError] = useState<any>('');
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [signupError, setSignupError] = useState('');
 
@@ -44,77 +41,75 @@ export default function CreateAppPasswordPage({navigation}: any): JSX.Element {
           }
         })
         .catch((err: any) => {
-          setError(JSON.stringify(err));
+          setSignupError(JSON.stringify(err));
         });
     }
   };
 
-  const resetPassword = () => {
-    AsyncStorage.removeItem(APP_PASSWORD)
-      .then(() => {
-        dispatch({
-          keys: ['password'],
-          values: [
-            {
-              load: false,
-              hasPassword: false,
-              auth: false,
-            },
-          ],
-        });
-      })
-      .catch((err: any) => {
-        setError(err);
-      });
-  };
-
   return (
     <View style={styles.container}>
-      {error ? <Text>{error}</Text> : null}
-      <TextInput
-        mode="outlined"
-        onChangeText={(v: string) => {
-          if (pass) {
-            setSignupError('');
+      <View style={styles.containerCenter}>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>Master Password</Text>
+          <Text>Master password or App lock password</Text>
+        </View>
+        <TextInput
+          mode="outlined"
+          onChangeText={(v: string) => {
+            if (pass) {
+              setSignupError('');
+            }
+            setPassword(v);
+          }}
+          value={pass}
+          label="Create master password"
+          secureTextEntry={secureTextEntry}
+          right={
+            <TextInput.Icon
+              icon="eye"
+              color="#4287f5"
+              onPress={() => {
+                setSecureTextEntry(!secureTextEntry);
+              }}
+            />
           }
-          setPassword(v);
-        }}
-        value={pass}
-        label="Create new password"
-        secureTextEntry={secureTextEntry}
-        right={
-          <TextInput.Icon
-            icon="eye"
-            color="#4287f5"
-            onPress={() => {
-              setSecureTextEntry(!secureTextEntry);
-            }}
-          />
-        }
-      />
-      {signupError ? (
-        <HelperText type="error" visible={true}>
-          {signupError}
-        </HelperText>
-      ) : null}
-      <Button mode="contained" style={{marginTop: 10}} onPress={save}>
-        Save
-      </Button>
-      <Button mode="contained" style={{marginTop: 10}} onPress={resetPassword}>
-        Reset Password
-      </Button>
+        />
+        {signupError ? (
+          <HelperText type="error" visible={true}>
+            {signupError}
+          </HelperText>
+        ) : null}
+        <Button mode="contained" style={{marginTop: 10}} onPress={save}>
+          Save
+        </Button>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  margin: {marginTop: 5, marginBottom: 5},
+  margin: {
+    marginTop: 5,
+    marginBottom: 5,
+  },
   container: {
     padding: 10,
     backgroundColor: 'white',
     height: '100%',
+  },
+  containerCenter: {
+    height: '100%',
     display: 'flex',
     justifyContent: 'center',
+  },
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: 50,
+  },
+  headerText: {
+    fontSize: 24,
+    fontWeight: 'bold',
   },
   input: {
     height: 40,

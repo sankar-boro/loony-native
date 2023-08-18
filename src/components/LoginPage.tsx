@@ -1,5 +1,6 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 import {useServiceContext} from '../ServiceProvider';
 import {validatePassword} from '../Encrypt';
 import {NAMES} from '../utils/Constants';
@@ -48,35 +49,46 @@ export default function LoginPage({navigation}: any): JSX.Element {
 
   return (
     <View style={styles.container}>
-      <View>
-        <TextInput
-          mode="outlined"
-          onChangeText={(v: string) => {
-            if (pass) {
-              setLoginError('');
+      <View style={styles.containerCenter}>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>Login</Text>
+          <Text>Login using Master Pasword or App Password</Text>
+        </View>
+        <View style={{marginBottom: 10}}>
+          <TextInput
+            mode="outlined"
+            onChangeText={(v: string) => {
+              if (pass) {
+                setLoginError('');
+              }
+              setPass(v);
+            }}
+            value={pass}
+            label="Master password"
+            secureTextEntry={secureTextEntry}
+            right={
+              <TextInput.Icon
+                icon="eye"
+                color="#4287f5"
+                onPress={() => {
+                  setSecureTextEntry(!secureTextEntry);
+                }}
+              />
             }
-            setPass(v);
-          }}
-          value={pass}
-          label="Master password"
-          secureTextEntry={secureTextEntry}
-          right={
-            <TextInput.Icon
-              icon="eye"
-              color="#4287f5"
-              onPress={() => {
-                setSecureTextEntry(!secureTextEntry);
-              }}
-            />
-          }
-        />
-        <HelperText type="error" visible={loginError ? true : false}>
-          {loginError}
-        </HelperText>
+          />
+          {loginError ? (
+            <HelperText type="error" visible={true}>
+              {loginError}
+            </HelperText>
+          ) : null}
+        </View>
+        <Button mode="contained" onPress={login}>
+          Login
+        </Button>
+        <View style={styles.forgot}>
+          <Text>Forgot Password?</Text>
+        </View>
       </View>
-      <Button mode="contained" onPress={login}>
-        Login
-      </Button>
     </View>
   );
 }
@@ -85,9 +97,21 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     height: '100%',
+    backgroundColor: 'white',
+  },
+  containerCenter: {
     justifyContent: 'center',
     display: 'flex',
-    backgroundColor: 'white',
+    height: '100%',
+  },
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: 50,
+  },
+  headerText: {
+    fontSize: 24,
+    fontWeight: 'bold',
   },
   text: {
     fontWeight: 'bold',
@@ -123,5 +147,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  forgot: {
+    display: 'flex',
+    marginTop: 20,
+    flexDirection: 'row-reverse',
   },
 });
